@@ -1,0 +1,7 @@
+*.asv
+*.bin
+*_temp.inp
+*_temp.txt
+*.txt
+*.mat
+*.eps
