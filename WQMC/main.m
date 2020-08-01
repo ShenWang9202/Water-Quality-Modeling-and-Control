@@ -25,14 +25,14 @@ start_toolkit;
 DEMAND_UNCERTAINTY = 1;
 Demand_Unc = 0.1;
 % Unknown uncertainty on or off
-UNKNOW_UNCERTAINTY = 1;
+UNKNOW_UNCERTAINTY = 0;
 % Parameter uncertainty on or off
 
 PARAMETER_UNCERTAINTY = 1;
 Kb_uncertainty = 0.1;
 Kw_uncertainty = 0.1;
 
-COMPARE = 1;
+COMPARE = 0;
 if(COMPARE == 1) % when compare LDE with EPANET, We have to make all uncertainty disappear
     PARAMETER_UNCERTAINTY = 0;
     UNKNOW_UNCERTAINTY = 0;
@@ -40,11 +40,14 @@ if(COMPARE == 1) % when compare LDE with EPANET, We have to make all uncertainty
 end
 
 Network = 1; % Don't use case 2
-%Network = 7; % Don't use case 2
+Network = 4; % Don't use case 2
 switch Network
     case 1
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
-        NetworkName = 'Threenode-cl-2-paper.inp';
+        % NetworkName = 'Threenode-cl-2-paper.inp'; pipe flow direction
+        % never changed, and the result is perfectly matched with EPANET
+        %NetworkName = 'Threenode-cl-3-paper.inp'; % Pipe flow direction changes
+        NetworkName = 'Threenode-cl-2-paper.inp'; % topogy changes
         Unknown_Happen_Time = 200;
         PipeID_Cell = {'P1'};
         JunctionID_Cell = {'J2'};
@@ -56,12 +59,14 @@ switch Network
         NetworkName = 'tutorial8node.inp';
     case 3
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
-        NetworkName = 'tutorial8node1.inp';
+        NetworkName = 'tutorial8nodeTimeScale.inp';
     case 4
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall=
         % -0.0; initial value: J2 = 0.5 mg/L, J6 = 1.2 mg/L, R1 = 0.8 mg/L;
         % segment = 1000;
         NetworkName = 'tutorial8node1inital.inp';
+        %         NetworkName = 'tutorial8node1inital2.inp';
+        filename = '8node_1day.mat';
     case 5
         % Quality Timestep = 1 min, and  Global Bulk = -0.5, Global Wall=
         % -0.0;
@@ -80,6 +85,8 @@ switch Network
     case 8
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
         NetworkName = 'Fournode-Cl-As-1.inp';
+    case 9
+        NetworkName = 'Net3-NH2CL-24hour.inp';
     otherwise
         disp('other value')
 end
@@ -102,19 +109,19 @@ nodeCount = JunctionCount + ReservoirCount + TankCount;
 switch Network
     case 1
         Location_B = {'J2'}; % NodeID here;
-        flowRate_B = [100]; % unit: GPM
+        flowRate_B = [10]; % unit: GPM
         Price_B = [1];
         % the C_B is what we need find in MPC, useless here
         %C_B = [1]; % unit: mg/L % Concentration of booster
     case {2,3,4}
-        Location_B = {}; %Location_B = {'J2'}; % NodeID here;
-        flowRate_B = [0]; % unit: GPM
-        Price_B = [1];
+        Location_B = {'J3','J7'}; % NodeID here;
+        flowRate_B = [10,10]; % unit: GPM
+        Price_B = [1,1];
         % the C_B is what we need find in MPC, useless here
         %C_B = [1]; % unit: mg/L % Concentration of booster
     case {5,6,7}
         Location_B = {'J11','J22','J31'}; % NodeID here;
-        flowRate_B = [100,100,100]; % unit: GPM
+        flowRate_B = [10,10,10]; % unit: GPM
         Price_B = [1,1,1];
         % the C_B is what we need find in MPC, useless here
         %C_B = [1]; % unit: mg/L % Concentration of booster
@@ -122,12 +129,18 @@ switch Network
         Location_B = {'J2'}; % NodeID here;
         flowRate_B = [100]; % unit: GPM
         Price_B = [1];
+    case 9
+        Location_B = {'J10'}; % NodeID here;
+        flowRate_B = [100]; % unit: GPM
+        Price_B = [1];
     otherwise
         disp('other value')
 end
 NodeID = Variable_Symbol_Table(1:nodeCount,1);
 %[q_B,C_B] = InitialBoosterFlow(nodeCount,Location_B,flowRate_B,NodeID,C_B);
+Price_B1 = Price_B';
 [q_B,Price_B,BoosterLocationIndex,BoosterCount] = InitialBooster(nodeCount,Location_B,flowRate_B,NodeID,Price_B);
+%[q_B,Price_B,BoosterLocationIndex,BoosterCount] = InitialBooster1(Location_B,flowRate_B,NodeID,Price_B);
 
 
 % Get the flow rate and head when use demand without uncertainty
@@ -182,38 +195,51 @@ aux = struct('NumberofSegment',NumberofSegment,...
     'MassEnergyMatrix',MassEnergyMatrix,...
     'flowRate_B',flowRate_B,...
     'q_B',q_B,...
-    'Price_B',Price_B,...
+    'Price_B',Price_B1,...,
+    'BoosterLocationIndex',BoosterLocationIndex,...,
+    'BoosterCount',BoosterCount,...,
     'NodeNameID',{NodeNameID},...
     'LinkNameID',{LinkNameID},...
     'NodesConnectingLinksID',{NodesConnectingLinksID},...
     'COMPARE',COMPARE);
-
+%    'Price_B',Price_B,...,
 
 %% Start MPC control
 
-
-QsN_Control = []; QsL_Control = []; NodeSourceQuality = []; T = []; PreviousSystemDynamicMatrix = []; UeachMin = [];
-X_estimated = []; PreviousDelta_t = []; ControlActionU = []; JunctionActualDemand = []; Head = []; Flow = []; XX_estimated = [];
-
+T = [];
+Head = [];
+Flow = [];
+UeachMin = [];
 Magnitude = [];
+X_estimated = [];
+QsN_Control = [];
+QsL_Control = [];
+XX_estimated = [];
+ControlActionU = [];
+PreviousDelta_t = [];
+NodeSourceQuality = [];
+ControlActionU_LDE = [];
+JunctionActualDemand = [];
+PreviousSystemDynamicMatrix = [];
+
 Hq_min = Constants4Concentration.Hq_min;% I need that all concention 5 minutes later are  in 0.2 mg 4 mg
+T_booster_min = Constants4Concentration.T_booster_min; % Booster station inject chlorin each 2 minutes.
 SimutionTimeInMinute = Constants4Concentration.SimutionTimeInMinute;
 
 PreviousValue = struct('PreviousDelta_t',PreviousDelta_t,...
     'PreviousSystemDynamicMatrix',PreviousSystemDynamicMatrix,...
     'X_estimated',X_estimated,...
     'U_C_B_eachStep',0,...
-    'UeachMinforEPANET',0);
+    'UeachIntervalforEPANET',0);
 
 d.openHydraulicAnalysis;
 d.openQualityAnalysis;
 d.initializeHydraulicAnalysis;
 d.initializeQualityAnalysis;
 
-tleft=1;
+tleft = 1;
 tInMin = 0;
 delta_t = 0;
-
 
 if DEMAND_UNCERTAINTY
     % load the head, flow, and velocity without uncertainty
@@ -223,10 +249,10 @@ if DEMAND_UNCERTAINTY
 end
 % profile on
 tic
-while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
-    t1 = d.runHydraulicAnalysis
+while (tleft > 0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
+    t1 = d.runHydraulicAnalysis;
     t=d.runQualityAnalysis;
-
+    
     % Obtain the actual Concentration
     QsN_Control=[QsN_Control; d.getNodeActualQuality];
     QsL_Control=[QsL_Control; d.getLinkQuality];
@@ -234,22 +260,21 @@ while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
     Flow=[Flow; d.getLinkFlows];
     TempDemand = d.getNodeActualDemand;
     JunctionActualDemand = [JunctionActualDemand; TempDemand(NodeJunctionIndex)];
-
+    
     % Calculate Control Action
     tInMin = t/60;
-    if(mod(tInMin,Hq_min)==0)
+    if(mod(tInMin,Hq_min) == 0)
         % 5 miniute is up, Calculate the New Control Action
-        disp('Calculte')
+        disp('Current time')
         tInMin
         tInHour = tInMin/60
-
+        
         if DEMAND_UNCERTAINTY
-            %             CurrentVelocity = d.getLinkVelocity
             CurrentVelocity = VelocityPipeWithoutUncertainty(tInMin + 1,:);
         else
             CurrentVelocity = d.getLinkVelocity;
         end
-
+        
         CurrentVelocityPipe = CurrentVelocity(:,PipeIndex);
         if PARAMETER_UNCERTAINTY
             Kb_all = add_uncertainty(Kb_all, Kb_uncertainty);
@@ -260,27 +285,25 @@ while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
         delta_t = LinkLengthPipe./NumberofSegment./CurrentVelocityPipe;
         delta_t = min(delta_t);
         delta_t = MakeDelta_tAsInteger(delta_t)
-
+        
         if DEMAND_UNCERTAINTY
-            %            CurrentFlow = d.getLinkFlows
             % Because tInmin starts from 0, but matlab's index is from 1, so we need to add 1 here
             CurrentFlow = FlowWithoutUncertainty(tInMin + 1,:);
-            %           CurrentHead = d.getNodeHydaulicHead
             CurrentHead = HeadWithoutUncertainty(tInMin + 1,:);
         else
             CurrentFlow = d.getLinkFlows;
             CurrentHead = d.getNodeHydaulicHead;
         end
-
+        
         Volume = d.getNodeTankVolume;
         CurrentNodeTankVolume = Volume(NodeTankIndex);
         CurrentHead = d.getNodeHydaulicHead;
-
+        
         % Estimate Hp of concentration; basciall 5 mins = how many steps
         SetTimeParameter = Hq_min*Constants4Concentration.MinInSecond/delta_t;
         Np = round(SetTimeParameter)
         %Np = floor(SetTimeParameter) + 1;
-
+        
         % Collect the current value
         CurrentValue = struct('CurrentVelocityPipe',CurrentVelocityPipe,...
             'CurrentNodeTankVolume',CurrentNodeTankVolume,...
@@ -289,20 +312,20 @@ while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
             'delta_t',delta_t,...
             'PipeReactionCoeff',PipeReactionCoeff,...
             'Np',Np);
-
+        
         % Esitmate the concentration in all elements according to the
         % system dynamics each 5 mins
-        [x_estimated,xx_estimated] = EstimateState_XX(CurrentValue,IndexInVar,aux,ElementCount,q_B,tInMin,C0,PreviousValue);
-
+        xx_estimated = EstimateState_XX_SaveMem(CurrentValue,IndexInVar,aux,ElementCount,q_B,tInMin,C0,PreviousValue);
+        x_estimated = xx_estimated(:,end);
         % when time = 200 minute, we simuate a disturbance, that is, the
         % chorine in J2 and Pipe 23 are suddenly drops to 0.5 due to
         % unknown reason, and we see how our MPC react.
         % We need to set the hijack x_estimated, and force the
         % concentration at J2 P23 as o.5 mg/L
-
+        
         if(UNKNOW_UNCERTAINTY==1 && tInMin == Unknown_Happen_Time)
             %x_estimated = Hijack_x_estimated(x_estimated);
-
+            
             % orangize parameter into a struct
             PipeID = Variable_Symbol_Table2(PipeIndexInOrder,1);
             JunctionID = Variable_Symbol_Table2(JunctionIndexInOrder,1);
@@ -317,34 +340,37 @@ while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
             % call function
             x_estimated = Hack_x_estimated_ByID(x_estimated,Struct4Hack);
             if Network == 1
-            % Note that for three node, we also need to change the pump's
-            % concnetration since pump = 0.5*(junction + Reservoir)
-            x_estimated(104) = 0.9; % This is only for three-node, comment this for the othre network
+                % Note that for three node, we also need to change the pump's
+                % concnetration since pump = 0.5*(junction + Reservoir)
+                x_estimated(104) = 0.9; % This is only for three-node, comment this for the othre network
             end
             % also update the each minute data to the every-5 minutes data
             xx_estimated(:,5) = x_estimated;
         end
-
+        
         % Store the estimated value for future use
         % This is every 5 miutes, that is, the 5-th mins, for control
         % purpose
-        X_estimated = [X_estimated x_estimated];
+        %X_estimated = [X_estimated x_estimated];
         % This is every 1 minute, that is, all 5 mins, for records purpose
         XX_estimated = [XX_estimated xx_estimated];
-
-
+        
+        
         % Calculate all of the control actions at each min
-        [UeachMinforEPANET,U_C_B_eachStep, PreviousSystemDynamicMatrix] = ObtainControlAction(CurrentValue,IndexInVar,aux,ElementCount,q_B,x_estimated,PreviousValue);
-
+        [UeachIntervalforEPANET,U_C_B_eachStep, PreviousSystemDynamicMatrix] = ObtainControlAction(CurrentValue,IndexInVar,aux,ElementCount,q_B,x_estimated,PreviousValue);
+        
         % Save Control Actions
-        ControlActionU = [ControlActionU; UeachMinforEPANET'];
+        ControlActionU = [ControlActionU; UeachIntervalforEPANET'];
+        % Save Control Actions
+        ControlActionU_LDE = [ControlActionU_LDE; U_C_B_eachStep'];
         PreviousDelta_t = [PreviousDelta_t delta_t];
-
-        PreviousValue.PreviousDelta_t = PreviousDelta_t;
+        
+        %PreviousDelta_t = [PreviousDelta_t delta_t];
+        PreviousValue.PreviousDelta_t = delta_t;
         PreviousValue.PreviousSystemDynamicMatrix = PreviousSystemDynamicMatrix;
-        PreviousValue.X_estimated = X_estimated;
+        PreviousValue.X_estimated = xx_estimated(:,end);
         PreviousValue.U_C_B_eachStep = U_C_B_eachStep;
-        PreviousValue.UeachMinforEPANET = UeachMinforEPANET;
+        PreviousValue.UeachIntervalforEPANET = UeachIntervalforEPANET;
         % find the maxium Eigenvalue of A matrix each 5 minutes, only do
         % this which applying control action to speed up these process,
         % otherwise it will take long time to run
@@ -353,24 +379,26 @@ while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
             Magnitude = [Magnitude mag];
         end
     end
-
+    
     % Apply Control action
-    if(tInMin > 0 && ~COMPARE)
+    if(tInMin > 0 && ~COMPARE && mod(tInMin,T_booster_min) == 0)
         % Set booster type as mass booster
         for booster_i = 1:BoosterCount
             d.setNodeSourceType(BoosterLocationIndex(booster_i),'MASS'); %Junction2's index is 1; we set it as mass booster
         end
-        %     SourcePattern = d.getNodeSourcePatternIndex;
-        %     SourcePattern = [3 0 0]; % set the third pattern
-        %     d.setNodeSourcePatternIndex(SourcePattern);
-        %     d.getNodeSourcePatternIndex
+
         TmpNodeSourceQuality = d.getNodeSourceQuality;
         NodeSourceQuality = [NodeSourceQuality; TmpNodeSourceQuality];
-        TmpNodeSourceQuality = ControlActionU(tInMin,:); %1 is the index of junction 2
+        intervalIndex = tInMin/T_booster_min;
+        TmpNodeSourceQuality = ControlActionU(intervalIndex,:)/T_booster_min; %1 is the index of junction 2
         %applycounter = applycounter + 1;
-        d.setNodeSourceQuality(TmpNodeSourceQuality);
+        for booster_i = 1:BoosterCount
+            indBooster = BoosterLocationIndex(booster_i);
+            SourceQualityValue = TmpNodeSourceQuality(booster_i);
+            d.setNodeSourceQuality(indBooster,SourceQualityValue);
+        end
     end
-
+    
     T=[T; t];
     tstep1 = d.nextHydraulicAnalysisStep;
     tstep = d.nextQualityAnalysisStep;
@@ -378,7 +406,7 @@ while (tleft>0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
     %     tleft = d.stepQualityAnalysisTimeLeft
     %     tleft1 = d.stepHydraulicAnalysisTimeLeft
 end
-toc
+runningtime = toc
 d.closeQualityAnalysis;
 d.closeHydraulicAnalysis;
 % p = profile('info')
@@ -401,8 +429,24 @@ for i = 1:n
         Indexrange = (j-1)*NumberofSegment + First;
         X_Min_Average(PipeIndexInOrder(j),i) = mean(X_Min(Indexrange,i));
     end
-    X_Min_Average(PumpIndexInOrder,i) = X_Min(Pump_CIndex,i);
-    X_Min_Average(ValveIndexInOrder,i) = X_Min(Valve_CIndex,i);
+    % Our own way to define the pump and valve concnetration, which equals
+    % their upstream nodes
+    
+    %X_Min_Average(PumpIndexInOrder,i) = X_Min(Pump_CIndex,i);
+    %X_Min_Average(ValveIndexInOrder,i) = X_Min(Valve_CIndex,i);
+    
+    % Epanet's way to define the pump and valve concnetration, wthich is
+    % the average value of the upstream and downstream nodes
+    
+    NodeIndex4EachLink = findIndexofNode_Link(MassEnergyMatrix);
+    NodeIndex4EachPump = NodeIndex4EachLink(PumpIndex,:);
+    NodeIndex4EachValve = NodeIndex4EachLink(ValveIndex,:);
+    for ithPump = 1:PumpCount
+        X_Min_Average(PumpIndexInOrder,i) = (X_Min(NodeIndex4EachPump(ithPump,1),i) +  X_Min(NodeIndex4EachPump(ithPump,2),i))*0.5;
+    end
+    for ithValve = 1:ValveCount
+        X_Min_Average(ValveIndexInOrder,i) = (X_Min(NodeIndex4EachValve(ithValve,1),i) +  X_Min(NodeIndex4EachValve(ithValve,2),i))*0.5;
+    end
 end
 close all
 NodeIndex = d.getNodeIndex;
@@ -453,14 +497,14 @@ ylabel('Demand at junctions (GPM)')
 legend(NodeID4Legend)
 
 figure
-plot(ControlActionU(:,BoosterLocationIndex))
+plot(ControlActionU)
 legend(Location_B)
 xlabel('Time (minute)')
 ylabel('Mass at boosters (mg/minute)')
 
 
 
-chlorinedose =  sum(sum(ControlActionU(:,BoosterLocationIndex)));
+chlorinedose =  sum(sum(ControlActionU));
 Price_Weight = Constants4Concentration.Price_Weight;
 Price = chlorinedose* Price_Weight;
 
@@ -495,3 +539,21 @@ if(COMPARE == 1)
 else
     Calculate_Error_EPANET_LDE(epanetResult',LDEResult1');
 end
+
+
+
+%plotSensorSelectionResult(sensorSelectionResult,NodeID4Legend);
+[m,n] = size(X_Min);
+basePipeCIndex = min(Pipe_CIndex);
+First = basePipeCIndex:basePipeCIndex+NumberofSegment-1;
+for j = 1:PipeCount
+    Indexrange = (j-1)*NumberofSegment + First;
+    figure
+    imagesc(X_Min(Indexrange,:));
+    pipeIDTtile = LinkID4Legend{j}
+    title(pipeIDTtile)
+    colorbar;
+end
+
+
+

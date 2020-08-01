@@ -13,10 +13,12 @@ NodesConnectingLinksIndex = zeros(m,n);
 
 % if the flow is negative, we need swap the order in
 % NodesConnectingLinksID due to the wrong assumption of flow direction.
-for i = NegativePipeIndex
-    temp = NodesConnectingLinksID{i,1};
-    NodesConnectingLinksID{i,1} = NodesConnectingLinksID{i,2};
-    NodesConnectingLinksID{i,2} = temp;
+[m_Neg,~] = size(NegativePipeIndex);
+
+for i = 1:m_Neg
+    temp = NodesConnectingLinksID{NegativePipeIndex(i),1};
+    NodesConnectingLinksID{NegativePipeIndex(i),1} = NodesConnectingLinksID{NegativePipeIndex(i),2};
+    NodesConnectingLinksID{NegativePipeIndex(i),2} = temp;
 end
 
 % Find the NodesConnectingLinksIndex according to the new NodesConnectingLinksID
@@ -41,11 +43,14 @@ end
 % For nodes like source or tanks shouldn't have mass equations.
  
 JunctionMassMatrix = MassEnergyMatrix(:,NodeJunctionIndex)';
-[RowNeg,ColNeg] = find(JunctionMassMatrix == -1);
-[m,~] = size(RowNeg);
-for i = 1:m
-    JunctionMassMatrix(RowNeg(i),ColNeg(i)) = 0;
-end
+% [RowNeg,ColNeg] = find(JunctionMassMatrix == -1);
+% [~,m] = size(RowNeg);
+% for i = 1:m
+%     JunctionMassMatrix(RowNeg(i),ColNeg(i)) = 0;
+% end
+
+% set all -1 to 0 in JunctionMassMatrix (only keep the links flowing in junctions)
+JunctionMassMatrix(JunctionMassMatrix<0) = 0;
 
 TankMassMatrix = MassEnergyMatrix(:,NodeTankIndex)';
 

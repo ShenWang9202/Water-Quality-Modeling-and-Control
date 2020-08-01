@@ -3,10 +3,6 @@ function LDEResult = updateLDEResult(LDEResult,IndexInVar,MassEnergyMatrix)
 pumpIndex = IndexInVar.PumpIndex;
 valveIndex = IndexInVar.ValveIndex;
 
-
-
-
-
 % find the nodes connecting to pumps and valves
 PumpMatrix = MassEnergyMatrix(pumpIndex,:);
 IndexofNodeforPump =  findIndexofNode_Link(PumpMatrix);
@@ -18,8 +14,6 @@ upstream = IndexofNodeforPump(i,1);
 downstream = IndexofNodeforPump(i,2);
 LDEResult(:,PumpIndexInOrder(i)) = (LDEResult(:,upstream) + LDEResult(:,downstream))/2;
 end
-
-
 
 % update the result for pumps and valves
 end

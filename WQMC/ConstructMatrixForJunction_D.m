@@ -1,11 +1,11 @@
-function [A_J_New, B_J_New]= ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,MassMatrix,ElementCount,IndexInVar,q_B,A_J,B_J)
+function [A_J_New, B_J_New]= ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B,A_J,B_J)
 
 %% find the inflows and outflows of each junctions
 JunctionCount = ElementCount.JunctionCount;
 NumberofX = IndexInVar.NumberofX;
 JunctionIndexInOrder = IndexInVar.JunctionIndexInOrder;
 inFlowSelectionMatrix = MassEnergyMatrix(:,JunctionIndexInOrder);
-% Next we find the outFlow of each jucntion. Sine the outflow of a junction is actual outflow in pipes + its demand, which is the inflows flow links  
+% Next we find the outFlow of each jucntion. Sine the outflow of a junction is actual outflow in pipes + its demand, which is the inflows flow links
 % So all we need to do is just to find the inflow index
 % To find the inflow index, just replace all -1 with 0
 [m,n] = size(inFlowSelectionMatrix);
@@ -30,13 +30,13 @@ PumpValveEnergMatrixforJunctions = MassEnergyMatrix(PumpValveIndex,JunctionIndex
 DownStreamJunctionsIndex_PumpValves = [];
 % for links, -1 is its index of upstream nodes, 1 is its index of downstream nodes
 for i = 1:row
-     tempindex = find(PumpValveEnergMatrixforJunctions(i,:)>0);
-     DownStreamJunctionsIndex_PumpValves = [DownStreamJunctionsIndex_PumpValves tempindex];
+    tempindex = find(PumpValveEnergMatrixforJunctions(i,:)>0);
+    DownStreamJunctionsIndex_PumpValves = [DownStreamJunctionsIndex_PumpValves tempindex];
 end
 
 %% find contribution from pipes
 [m,n] = size(inFlow);
-contributionC = zeros(m,n); 
+contributionC = zeros(m,n);
 for i = 1:m
     if (outFlow_Each_Junction(i)~=0)
         contributionC(i,:) = inFlow(i,:)/outFlow_Each_Junction(i);
@@ -51,29 +51,29 @@ for i = 1:m % for each junction
         [~,Col] = find(contributionC(i,:)~=0);
         [~,n] = size(Col);
         for j=1:n
-            lastSegmentIndex = findIndexofLastSegment(Col(j),IndexInVar);
-            A_J(i,lastSegmentIndex) = contributionC(i,Col(j));
-            % note the following three functions can be summerized as
-            % these above two statements because findIndexofLastSegment
-            % didn't care about wheter it is a pipe or a pump or a valve
-            
-%             % if this link is a pipe
-%             if(ismember(Col(j),IndexInVar.PipeIndex))
-%                 lastSegmentIndex = findIndexofLastSegment(Col(j),IndexInVar);
-%                 A_J(i,lastSegmentIndex) = contributionC(i,Col(j));
-%             end
-%             
-%             % if this link is a pump
-%             if(ismember(Col(j),IndexInVar.PumpIndex))
-%                 pumpCIndex = findIndexofLastSegment(Col(j),IndexInVar);
-%                 A_J(i,pumpCIndex) = contributionC(i,Col(j));
-%             end
-%             
-%             % if this link is a valve
-%             if(ismember(Col(j),IndexInVar.ValveIndex))
-%                 valveCIndex = findIndexofLastSegment(Col(j),IndexInVar);
-%                 A_J(i,valveCIndex) = contributionC(i,Col(j));
-%             end
+            [lastSegmentIndex,isPipe] = findIndexofLastorFirstSegment(Col(j),IndexInVar,flipped(Col(j)));
+            %lastSegmentIndex = findIndexofLastSegment(Col(j),IndexInVar);
+%              A_J(i,lastSegmentIndex) = contributionC(i,Col(j));
+
+            % consider the average of two, three or four. to make LW smooth
+%              A_J(i,lastSegmentIndex) = contributionC(i,Col(j));
+            % When calculate the concentration at junction, we make it
+            % equal the average of first four segment or last four segment,
+            % instead of the first or last segment.
+            if(isPipe)
+                A_J(i,lastSegmentIndex+0) = contributionC(i,Col(j))/4;
+                if(flipped(Col(j)))
+                    A_J(i,lastSegmentIndex+1) = contributionC(i,Col(j))/4;
+                    A_J(i,lastSegmentIndex+2) = contributionC(i,Col(j))/4;
+                    A_J(i,lastSegmentIndex+3) = contributionC(i,Col(j))/4;
+                else
+                    A_J(i,lastSegmentIndex-1) = contributionC(i,Col(j))/4;
+                    A_J(i,lastSegmentIndex-2) = contributionC(i,Col(j))/4;
+                    A_J(i,lastSegmentIndex-3) = contributionC(i,Col(j))/4;
+                end
+            else % when it is pump or valve
+                A_J(i,lastSegmentIndex) = contributionC(i,Col(j));
+            end
         end
     end
 end

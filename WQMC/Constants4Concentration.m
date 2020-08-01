@@ -1,16 +1,25 @@
 classdef Constants4Concentration
     properties( Constant = true )
+        
         %QualityTimeStep = 300; % 5 mins
         Price_Weight = 0.001;
-        reference = 2;% any value between 0.4~4mg/L;
-        SimutionTimeInMinute = 24*60; %Simulate three-node for 1 day
+        % The setpoint or reference of chlorin concentration in WDNs (any value between 0.4~4mg/L);
+        reference = 2;
+        %Simulate three-node for 1 day
+        SimutionTimeInMinute = 24*60; 
         %SimutionTimeInMinute = 4*24*60; % Simulate Net1 for 4 day
-        SimutionTimeInMinute4RBC = 24*60;  %Simulate three-node (rule based control) for 1 day
-        Hq_min = 5;
+        
+        %Simulate three-node (rule based control) for 1 day
+        SimutionTimeInMinute4RBC = 24*60;  
+        % Interval (in minutes) of injecting chlorin from boosters (must be a factor or divisor of Hq_min)
+        T_booster_min = 5;
+        % Control Horizen (in minutes) of MPC algorithm (must be a factor or divisor of Hydraulic Time Step, which is 60 minutes defaultly in our case studies)
+        Hq_min = 10;
+        % How many segements of a pipe.
+        NumberofSegment = 100;
+
         DayInSecond = 86400;
         MinInSecond = 60;
-        NumberofSegment = 100;
-        
         Gallon2Liter = 3.78541;
         FT2Inch = 12;
         pi = 3.141592654;

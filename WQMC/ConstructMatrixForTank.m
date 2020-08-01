@@ -9,6 +9,7 @@ Tank_CIndex = IndexInVar.Tank_CIndex;
 TankIndexInOrder = IndexInVar.TankIndexInOrder;
 % step 2: find the impact of inflow and outflow
 A_TK = [];
+q_B = q_B./Constants4Concentration.GPMperCFS; % concert q_B from GPM to CFS
 [NodeCount,~] = size(q_B);
 B_TK = zeros(TankCount,NodeCount);
 for i = 1:TankCount
@@ -38,9 +39,10 @@ for i = 1:TankCount
     
     for j = 1:m
         Index =  findIndexofLastSegment(IndexofInFlow(j),IndexInVar);
+        %Index = findIndexofLastorFirstSegment(Col(j),IndexInVar,flipped(j));
         A_TK_i(1,Index) = delta_t*CurrentTrueFlowPipe_Tank_i(IndexofInFlow(j))/NodeTankVolume_Next(i);
     end
     A_TK = [A_TK;A_TK_i];
-    B_TK(i,TankIndexInOrder(i)) = delta_t*q_B(TankIndexInOrder(i),1)/NodeTankVolume_Next(i);
+    B_TK(i,TankIndexInOrder(i)) = delta_t * q_B(TankIndexInOrder(i),1)/NodeTankVolume_Next(i);
 end
 end

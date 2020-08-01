@@ -148,7 +148,7 @@ LINK 9 1 AT TIME 0
 [TIMES]
  Duration           	24:00 
  Hydraulic Timestep 	1:00 
- Quality Timestep   	0:01 
+ Quality Timestep   	0:05 
  Pattern Timestep   	1:00 
  Pattern Start      	0:00 
  Report Timestep    	0:01 
