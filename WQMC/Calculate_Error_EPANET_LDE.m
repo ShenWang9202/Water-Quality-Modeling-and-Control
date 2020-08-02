@@ -4,8 +4,10 @@ function errorVetor = Calculate_Error_EPANET_LDE(EPANET_Result,LDE_Result)
 EPANET_Result = EPANET_Result(:,2:end);
 LDE_Result = LDE_Result(:,1:end-1);
 LDE_Result(:,1) = EPANET_Result(:,1);
-Error = EPANET_Result - LDE_Result;
-[~,TimeInMinutes] = size(Error);
+[~,sizeEPANET] = size(EPANET_Result);
+[~,sizeLDE] = size(LDE_Result);
+TimeInMinutes = min(sizeEPANET,sizeLDE);
+Error = EPANET_Result(:,1:TimeInMinutes) - LDE_Result(:,1:TimeInMinutes);
 errorVetor = zeros(1,TimeInMinutes);
 for i = 1:TimeInMinutes
     errorVetor(i) = norm(Error(:,i))/ norm(EPANET_Result(:,i));
@@ -15,8 +17,8 @@ figure1 = figure
 fontsize = 36;
 plot(errorVetor,'LineWidth',2);
 xticks([0 360 720 1080 1440])
-yticks([0.005 0.015 0.025])
-yticklabels({'0.5\%','1.5\%','2.5\%'})
+% yticks([0.005 0.015 0.025])
+% yticklabels({'0.5\%','1.5\%','2.5\%'})
 xlim([0,1440])
 %ylim([200,900]);
 set(gca, 'TickLabelInterpreter', 'latex','fontsize',fontsize);

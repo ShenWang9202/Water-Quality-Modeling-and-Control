@@ -40,7 +40,7 @@ if(COMPARE == 1) % when compare LDE with EPANET, We have to make all uncertainty
 end
 
 Network = 1; % Don't use case 2
-Network = 4; % Don't use case 2
+Network = 9; % Don't use case 2
 switch Network
     case 1
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
@@ -87,7 +87,7 @@ switch Network
         NetworkName = 'Fournode-Cl-As-1.inp';
     case 9
         %NetworkName = 'Net3-NH2CL-24hour-4.inp'; % this is used to test the topology changes
-        NetworkName = 'Net3-NH2CL-24hour-5.inp';
+        NetworkName = 'Net3-NH2CL-24hour-modified.inp';
         filename = 'Net3_1day.mat';
     otherwise
         disp('other value')
@@ -132,9 +132,9 @@ switch Network
         flowRate_B = [100]; % unit: GPM
         Price_B = [1];
     case 9
-        Location_B = {'J10'}; % NodeID here;
-        flowRate_B = [100]; % unit: GPM
-        Price_B = [1];
+        Location_B = {'J199','J161','J111','J121','J149','J197','J211'}; % NodeID here;
+        flowRate_B = [10,10,10,10,10,10,10]; % unit: GPM
+        Price_B = [1,1,1,1,1,1,1];
     otherwise
         disp('other value')
 end

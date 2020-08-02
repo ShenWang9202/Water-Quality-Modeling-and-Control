@@ -2,11 +2,11 @@ classdef Constants4Concentration
     properties( Constant = true )
         % Only do water quality simulation using LDE model and compare it
         % with EPANET (set ONLY_COMPARE variable as 1, otherwise, set it as 0)
-        ONLY_COMPARE = 0;
+        ONLY_COMPARE = 1;
         %QualityTimeStep = 300; % 5 mins
         Price_Weight = 0.001;
         % The setpoint or reference of chlorin concentration in WDNs (any value between 0.4~4mg/L);
-        reference = 2;
+        reference = 1;
         %Simulate three-node for 1 day
         SimutionTimeInMinute = 24*60; 
         %SimutionTimeInMinute = 4*24*60; % Simulate Net1 for 4 day
@@ -14,9 +14,9 @@ classdef Constants4Concentration
         %Simulate three-node (rule based control) for 1 day
         SimutionTimeInMinute4RBC = 24*60;  
         % Interval (in minutes) of injecting chlorin from boosters (must be a factor or divisor of Hq_min)
-        T_booster_min = 5;
+        T_booster_min = 1;
         % Control Horizen (in minutes) of MPC algorithm (must be a factor or divisor of Hydraulic Time Step, which is 60 minutes defaultly in our case studies)
-        Hq_min = 10;
+        Hq_min = 5;
         % How many segements of a pipe.
         NumberofSegment = 100;
 

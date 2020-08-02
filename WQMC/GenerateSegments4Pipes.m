@@ -52,10 +52,11 @@ switch Network
             end
         end
         
-        NumberofSegment4Pipes = LinkLengthPipe/10;
+        NumberofSegment4Pipes = LinkLengthPipe/30;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
-        NumberofSegment4Pipes(NumberofSegment4Pipes<150) = 150;
-        NumberofSegment4Pipes(1:3) = 1000;
+        NumberofSegment4Pipes(NumberofSegment4Pipes<20) = 20;
+        NumberofSegment4Pipes(NumberofSegment4Pipes>500) = 500;
+        %NumberofSegment4Pipes(1:3) = 1000;
         
         
         % allResult = d.getComputedHydraulicTimeSeries;
