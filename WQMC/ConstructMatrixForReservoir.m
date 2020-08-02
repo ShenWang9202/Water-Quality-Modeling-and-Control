@@ -9,5 +9,5 @@ for i = 1:ReservoirCount
     A_Reservoir_i(1,Reservoir_CIndex(i)) = 1;
     A_Rervoir = [A_Rervoir;A_Reservoir_i];
 end
-A_R = A_Rervoir;
+A_R = sparse(A_Rervoir);
 end

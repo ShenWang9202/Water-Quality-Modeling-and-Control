@@ -1,18 +1,22 @@
-function [A_J_New, B_J_New]= ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B,A_J,B_J)
+function [A_J_New, B_J_New]= ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B,A_J,B_J,aux)
 
 %% find the inflows and outflows of each junctions
 JunctionCount = ElementCount.JunctionCount;
 NumberofX = IndexInVar.NumberofX;
 JunctionIndexInOrder = IndexInVar.JunctionIndexInOrder;
 inFlowSelectionMatrix = MassEnergyMatrix(:,JunctionIndexInOrder);
+NumberofSegment4Pipes = aux.NumberofSegment4Pipes;
 % Next we find the outFlow of each jucntion. Sine the outflow of a junction is actual outflow in pipes + its demand, which is the inflows flow links
 % So all we need to do is just to find the inflow index
 % To find the inflow index, just replace all -1 with 0
-[m,n] = size(inFlowSelectionMatrix);
-for i = 1:n
-    inflow_index = find(inFlowSelectionMatrix(:,i)<0);
-    inFlowSelectionMatrix(inflow_index,i) = 0;
-end
+
+% [m,n] = size(inFlowSelectionMatrix);
+% for i = 1:n
+%     inflow_index = find(inFlowSelectionMatrix(:,i)<0);
+%     inFlowSelectionMatrix(inflow_index,i) = 0;
+% end
+
+inFlowSelectionMatrix(inFlowSelectionMatrix < 0) = 0;
 % this outFlow already include demand
 
 inFlowMatrix = inFlowSelectionMatrix .* CurrentFlow;
@@ -51,7 +55,7 @@ for i = 1:m % for each junction
         [~,Col] = find(contributionC(i,:)~=0);
         [~,n] = size(Col);
         for j=1:n
-            [lastSegmentIndex,isPipe] = findIndexofLastorFirstSegment(Col(j),IndexInVar,flipped(Col(j)));
+            [lastSegmentIndex,isPipe] = findIndexofLastorFirstSegment(Col(j),IndexInVar,flipped(Col(j)),NumberofSegment4Pipes);
             %lastSegmentIndex = findIndexofLastSegment(Col(j),IndexInVar);
 %              A_J(i,lastSegmentIndex) = contributionC(i,Col(j));
 

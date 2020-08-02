@@ -7,7 +7,8 @@ if(tInMin==0)
     CurrentHead = CurrentValue.CurrentHead;
     %Head0 = Head(1,:);
     % Something wrong with this intial function with 8-node network
-    x0 = InitialConcentration(x0,C0,MassEnergyMatrix,CurrentHead,IndexInVar,ElementCount);
+    NumberofSegmentsEachPipe = aux.NumberofSegment4Pipes;
+    x0 = InitialConcentration(x0,C0,MassEnergyMatrix,CurrentHead,IndexInVar,ElementCount,NumberofSegmentsEachPipe);
     x_estimated = x0;
     XX = x_estimated;
 else

@@ -160,6 +160,7 @@ ElementCount = struct('JunctionCount',JunctionCount,...
 
 % define the number of segment
 NumberofSegment = Constants4Concentration.NumberofSegment;
+
 % so the total size of x
 NumberofX = double(JunctionCount + ReservoirCount + TankCount + ...
     PipeCount * NumberofSegment + PumpCount + ValveCount);

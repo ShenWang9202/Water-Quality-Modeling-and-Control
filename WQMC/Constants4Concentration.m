@@ -1,6 +1,8 @@
 classdef Constants4Concentration
     properties( Constant = true )
-        
+        % Only do water quality simulation using LDE model and compare it
+        % with EPANET (set ONLY_COMPARE variable as 1, otherwise, set it as 0)
+        ONLY_COMPARE = 0;
         %QualityTimeStep = 300; % 5 mins
         Price_Weight = 0.001;
         % The setpoint or reference of chlorin concentration in WDNs (any value between 0.4~4mg/L);

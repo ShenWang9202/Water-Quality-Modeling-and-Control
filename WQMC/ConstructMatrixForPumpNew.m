@@ -5,14 +5,19 @@ function [A_M,B_M] = ConstructMatrixForPumpNew(EnergyMatrixPump,UpstreamNode_Ama
 EnergyMatrixPump = -EnergyMatrixPump;
 
 % next, remove the downstream node index for pumps
-[m,~] = size(EnergyMatrixPump);
-for i = 1:m
-    downstreamNodeIndex = find(EnergyMatrixPump(:,i)<0);
-    EnergyMatrixPump(i,downstreamNodeIndex) = 0;
-end
+% [m,~] = size(EnergyMatrixPump);
+% for i = 1:m
+%     downstreamNodeIndex = find(EnergyMatrixPump(:,i)<0);
+%     EnergyMatrixPump(i,downstreamNodeIndex) = 0;
+% end
+
+EnergyMatrixPump(EnergyMatrixPump<0) = 0;
 
 A_M = EnergyMatrixPump * UpstreamNode_Amatrix;
 B_M = EnergyMatrixPump * UpstreamNode_Bmatrix;
+
+A_M = sparse(A_M);
+B_M = sparse(B_M);
 
 % step 1 find the Index of Node at both end of that link
 

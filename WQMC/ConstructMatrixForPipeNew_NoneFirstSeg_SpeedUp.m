@@ -1,4 +1,4 @@
-function A_Pipe = ConstructMatrixForPipeNew_NoneFirstSeg(delta_t,CurrentFlow,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff_perSec)
+function A_Pipe = ConstructMatrixForPipeNew_NoneFirstSeg_SpeedUp(delta_t,CurrentFlow,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff_perSec)
 %NodeTankVolume = aux.NodeTankVolume;
 % NumberofSegment = aux.NumberofSegment;
 NumberofSegment4Pipes = aux.NumberofSegment4Pipes;
@@ -28,40 +28,56 @@ IndexofNode_pipe =  findIndexofNode_Link(EnergyMatrixPipe);
 % the same. Hence, IndexofNode_pipe is the Concerntration Index we are
 % looking for.
 
-minPipe_CIndex = min(Pipe_CStartIndex);
-numberofNodes = minPipe_CIndex - 1;
+numberofNodes = min(Pipe_CStartIndex) - 1;
 % step 3 construction matrix
 % A_Pipe = sparse(NumberofSegment*PipeCount,NumberofX);
-A_Pipe = sparse(sum(NumberofSegment4Pipes),NumberofX);
+NoneZeroI = (sum(NumberofSegment4Pipes)-PipeCount);
+NoneZero = NoneZeroI * 3;
+
+iVectorPrepare = zeros(1,NoneZeroI);
+vVectorPrepare = zeros(PipeCount,3);
+jVector = zeros(1,NoneZero);
+tempI = 1;
+tempJ = 1;
+tempV = 1;
 for i = 1:PipeCount
     alpha_i = alpha(i);
     alpha_neg1 =  0.5 * alpha_i *(1+alpha_i);
-    % need to consider the PipeBulkReactionCoeff (assuming first order)
-    % be careful, always make sure alpha_zero is [0,1], if alpha_i is
-    % negative, which means the flow direction is opposite as assumed, we
-    % need to an absolute function
     alpha_zero =  (1-abs(alpha_i)^2) + PipeReactionCoeff_perSec(i)*delta_t ;
     alpha_pos1 =  -0.5 * alpha_i *(1-alpha_i);
-    A_Pipe_i = sparse(NumberofSegment4Pipes(i),NumberofX);
-    %     BasePipe_CIndex = minPipe_CIndex + (i-1)*NumberofSegment - 1;
-    BasePipe_CIndex = Pipe_CStartIndex(i)- 1;
-    %From second segment
-    for seg =  2:(NumberofSegment4Pipes(i)-1)
-        A_Pipe_i(seg,BasePipe_CIndex + seg - 1 ) = alpha_neg1;
-        A_Pipe_i(seg,BasePipe_CIndex + seg ) = alpha_zero;
-        A_Pipe_i(seg,BasePipe_CIndex + seg + 1 ) = alpha_pos1;
-    end
-    % last segment
-    seg = NumberofSegment4Pipes(i);
-    A_Pipe_i(seg,BasePipe_CIndex + seg-1) = alpha_neg1;
-    A_Pipe_i(seg,BasePipe_CIndex + seg) = alpha_zero;
-    % here, need to use the index of node connecting the
-    % last segement
-    A_Pipe_i(seg,IndexofNode_pipe(i,2)) = alpha_pos1;
-    %A_Pipe(((i-1)*NumberofSegment + 1):(i*NumberofSegment),:) = A_Pipe_i;
     
-    range = Pipe_CStartIndex(i):Pipe_CStartIndex(i) + NumberofSegment4Pipes(i)-1;
-    range = range - numberofNodes;
-    A_Pipe(range,:) = A_Pipe_i;
+    vVect = [alpha_neg1 alpha_zero alpha_pos1];
+    
+    secondSegment = Pipe_CStartIndex(i) + 1;
+    lastbutOneSegment = Pipe_CStartIndex(i) + NumberofSegment4Pipes(i) - 2;
+    
+    iVectorPrepare(tempI:(tempI + NumberofSegment4Pipes(i)-2)) = secondSegment:lastbutOneSegment+1;
+    tempI = tempI + NumberofSegment4Pipes(i) - 1;
+    
+    vVectorPrepare(tempV,:) = vVect;
+    tempV = tempV + 1;
+    
+    for seg = secondSegment:lastbutOneSegment
+        jVector(tempJ:tempJ+2) = seg - 1:seg + 1;
+        tempJ = tempJ + 3;
+    end
+    
+    seg = lastbutOneSegment + 1; % last segment
+
+    jVector(tempJ:tempJ+1) =  seg - 1:seg ;
+    tempJ = tempJ + 2;
+    jVector(tempJ) = IndexofNode_pipe(i,2);
+    tempJ = tempJ + 1;
 end
+
+iVector = repmat(iVectorPrepare,3,1);
+iVector = reshape(iVector,1,[]) - numberofNodes;
+
+vVector = zeros(NoneZeroI,3);
+for i = 1:3
+    vVector(:,i) = repelem(vVectorPrepare(:,i),NumberofSegment4Pipes-1);
+end
+vVector = reshape(vVector',1,[]);
+
+A_Pipe = sparse(iVector,jVector,vVector,sum(NumberofSegment4Pipes),NumberofX);
 end

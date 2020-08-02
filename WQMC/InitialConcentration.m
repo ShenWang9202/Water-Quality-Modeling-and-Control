@@ -1,4 +1,4 @@
-function x0 = InitialConcentration(x0,C0,MassEnergyMatrix,Head0,IndexInVar,ElementCount)
+function x0 = InitialConcentration(x0,C0,MassEnergyMatrix,Head0,IndexInVar,ElementCount,NumberofSegmentsEachPipe)
 NumberofSegment = Constants4Concentration.NumberofSegment;
 JunctionIndexInOrder = IndexInVar.JunctionIndexInOrder; 
 Junction_CIndex = IndexInVar.Junction_CIndex;
@@ -24,6 +24,8 @@ x0(Junction_CIndex) = C0(JunctionIndexInOrder);
 x0(Reservoir_CIndex) = C0(ReservoirIndexInOrder);
 x0(Tank_CIndex) = C0(TankIndexInOrder);
 
+Pipe_CStartIndex = IndexInVar.Pipe_CStartIndex;
+
 
 % for pipes, make it to the low head side
 BasePipe_CIndex = min(Pipe_CIndex);
@@ -31,7 +33,13 @@ EnergyMatrixPipe = MassEnergyMatrix(PipeIndex,:);
 for i = 1:PipeCount
     LowHeadNodeIndex = findLowHeadSide(EnergyMatrixPipe(i,:),Head0);
 %    if(LowHeadNodeIndex in IndexInVar.TankIndexInOrder)
-    x0(BasePipe_CIndex + (i-1)*NumberofSegment:BasePipe_CIndex+i*NumberofSegment - 1) = C0(LowHeadNodeIndex);
+
+% Same number of segments
+    %x0(BasePipe_CIndex + (i-1)*NumberofSegment:BasePipe_CIndex+i*NumberofSegment - 1) = C0(LowHeadNodeIndex);
+    
+% Different number of segments
+    range = Pipe_CStartIndex(i):Pipe_CStartIndex(i) + NumberofSegmentsEachPipe(i)-1;
+    x0(range) = C0(LowHeadNodeIndex);
 end
 EnergyMatrixPump = MassEnergyMatrix(PumpIndex,:);
 

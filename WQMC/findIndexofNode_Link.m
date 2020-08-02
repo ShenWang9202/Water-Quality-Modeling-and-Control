@@ -1,4 +1,7 @@
 function IndexofNode_Link =  findIndexofNode_Link(EnergyMatrixLink)
+
+% This EnergyMatrixLink has to be the one (with real flow direction) after updating flow direction;
+
 [m,~] = size(EnergyMatrixLink);
 IndexofNode_Link = zeros(m,2);
 for i = 1:m

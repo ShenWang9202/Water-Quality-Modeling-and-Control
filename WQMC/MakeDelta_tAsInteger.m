@@ -1,10 +1,12 @@
 function delta_t = MakeDelta_tAsInteger(delta_t)
 MinInSecond = Constants4Concentration.MinInSecond;
 if(delta_t<1)
-    temp = 1./findDivisorofN(1000)
-    minIndex = min(find(temp <= delta_t))
+    temp = 1./findDivisorofN(6000);
+    minIndex = min(find(temp <= delta_t));
     if(~isempty(minIndex))
         delta_t = temp(minIndex);
+    else
+        disp('too small timestep')
     end
 elseif(delta_t <MinInSecond )
     Divisor = [];

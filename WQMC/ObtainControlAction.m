@@ -28,6 +28,8 @@ PreviousSystemDynamicMatrix = struct('A',A,...
     'B',B,...
     'C',C);
 
+
+
 % MPC data
 [W,Z,~,~,~] = MPCScale(A,B,C,Np);
 

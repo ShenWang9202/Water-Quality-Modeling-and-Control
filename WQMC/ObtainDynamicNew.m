@@ -19,6 +19,8 @@ CurrentFlow = CurrentFlow';
 CurrentFlowWithDirection = CurrentFlow;
 MassEnergyMatrixWithDirection = aux.MassEnergyMatrix;
 
+
+
 PipeFlow = CurrentFlow(IndexInVar.PipeIndex);
 NegativePipeIndex = find(PipeFlow<0);
 linkCount = ElementCount.PipeCount +  ElementCount.PumpCount +  ElementCount.ValveCount;
@@ -64,47 +66,62 @@ NumberofSegment = Constants4Concentration.NumberofSegment;
 
 % for Pipes (non-first segments)
 EnergyMatrixPipe= MassEnergyMatrixWithDirection(PipeIndex,:);
-A_P = ConstructMatrixForPipeNew_NoneFirstSeg(delta_t,CurrentFlowWithDirection,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff);
-
+% A_P = ConstructMatrixForPipeNew_NoneFirstSeg(delta_t,CurrentFlowWithDirection,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff);
+% A_P = ConstructMatrixForPipeNew_NoneFirstSeg_Speed(delta_t,CurrentFlowWithDirection,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff);
+%A_P = ConstructMatrixForPipeNew_NoneFirstSeg_SpeedUp(delta_t,CurrentFlowWithDirection,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff);
+A_P = ConstructMatrixForPipeNew_NoneFirstSeg_SpeedUpUp(delta_t,CurrentFlowWithDirection,EnergyMatrixPipe,ElementCount,IndexInVar,aux,PipeReactionCoeff);
 % for reservoirs
 A_R = ConstructMatrixForReservoir(ElementCount,IndexInVar);
 B_R = sparse(ReservoirCount,nodeCount);
 
 % for tanks
-[A_TK,B_TK,~] = ConstructMatrixForTank(delta_t,CurrentFlow,CurrentNodeTankVolume,TankMassMatrix,ElementCount,IndexInVar,aux,q_B);
+[A_TK,B_TK,~] = ConstructMatrixForTank(delta_t,CurrentFlow,CurrentNodeTankVolume,TankMassMatrix,ElementCount,IndexInVar,aux,q_B,flipped);
 % for junctions in none D set
-[A_J, B_J] = ConstructMatrixForJunction_NoneD(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B);
+[A_J, B_J] = ConstructMatrixForJunction_NoneD(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B,aux);
 
 % for Pumps
-B_M = sparse(PumpCount,nodeCount);
+% B_M = sparse(PumpCount,nodeCount);
 UpstreamNode_Amatrix = [A_J;A_R;A_TK];
 UpstreamNode_Bmatrix = [B_J;B_R;B_TK];
 EnergyMatrixPump= MassEnergyMatrix(PumpIndex,:);
 [A_M,B_M] = ConstructMatrixForPumpNew(EnergyMatrixPump,UpstreamNode_Amatrix,UpstreamNode_Bmatrix);
 
 % for Valves
-B_W = sparse(ValveCount,nodeCount);
+% B_W = sparse(ValveCount,nodeCount);
 EnergyMatrixValve= MassEnergyMatrix(ValveIndex,:);
 [A_W,B_W] = ConstructMatrixForValveNew(EnergyMatrixValve,UpstreamNode_Amatrix,UpstreamNode_Bmatrix);
 
 % for junctions in D set
-[A_J, B_J] = ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B, A_J, B_J);
+[A_J, B_J] = ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B, A_J, B_J, aux);
 
 % for Pipes (non-first segments)
-B_P = sparse(NumberofSegment*PipeCount,nodeCount);
+% B_P = sparse(NumberofSegment*PipeCount,nodeCount);
+
+B_P = sparse(sum(aux.NumberofSegment4Pipes),nodeCount);
 EnergyMatrixPipe= MassEnergyMatrixWithDirection(PipeIndex,:);
-NewUpstreamNode_Amatrix = [A_J;A_R;A_TK]; % Note this A_J includes the downstream node of pump and nodes, that is different from UpstreamNode_Amatrix
-NewUpstreamNode_Bmatrix = [B_J;B_R;B_TK]; % Same as B_J
-[A_P,B_P] = ConstructMatrixForPipeNew_FirstSeg(EnergyMatrixPipe,ElementCount,aux,A_P,NewUpstreamNode_Amatrix,NewUpstreamNode_Bmatrix,B_P);
+
+
+% this is not considering the first segment of a pipe
+
+% NewUpstreamNode_Amatrix = [A_J;A_R;A_TK]; % Note this A_J includes the downstream node of pump and nodes, that is different from UpstreamNode_Amatrix
+% NewUpstreamNode_Bmatrix = [B_J;B_R;B_TK]; % Same as B_J
+% % [A_P,B_P] = ConstructMatrixForPipeNew_FirstSeg(EnergyMatrixPipe,ElementCount,IndexInVar,A_P,NewUpstreamNode_Amatrix,NewUpstreamNode_Bmatrix,B_P);
+% [A_P,B_P] = ConstructMatrixForPipeNew_FirstSeg_SpeedUp(EnergyMatrixPipe,ElementCount,IndexInVar,A_P,NewUpstreamNode_Amatrix,NewUpstreamNode_Bmatrix,B_P);
+
+% The following four lines are for debugging purpose
+% [A_P1,B_P1] = ConstructMatrixForPipeNew_FirstSeg(EnergyMatrixPipe,ElementCount,IndexInVar,A_P,NewUpstreamNode_Amatrix,NewUpstreamNode_Bmatrix,B_P);
+% [A_P2,B_P2] = ConstructMatrixForPipeNew_FirstSeg_SpeedUp(EnergyMatrixPipe,ElementCount,IndexInVar,A_P,NewUpstreamNode_Amatrix,NewUpstreamNode_Bmatrix,B_P);
+% zeroExpected = full(B_P1 - B_P2);
+% isempty(find(zeroExpected~=0, 1))
+
+
 
 % construct A;
 A = [A_J;A_R;A_TK;A_P;A_M;A_W];
 % construct B;
 B = [B_J;B_R;B_TK;B_P;B_M;B_W];
 
-NumberofX = double(JunctionCount + ReservoirCount + TankCount + ...
-    PipeCount * NumberofSegment + PumpCount + ValveCount);
-nx = NumberofX; % Number of states
+nx = IndexInVar.NumberofX; % Number of states
 
 C = generateC(nx);
 
