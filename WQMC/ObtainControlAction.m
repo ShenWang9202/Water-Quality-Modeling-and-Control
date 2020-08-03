@@ -44,9 +44,10 @@ Xa = [Deltax;yk];
 % nu = nodeCount;
 nu = BoosterCount;
 n_deltau = Np*nu;
-%R = 1000*speye(n_deltau,n_deltau); Change this R to change the smoothness
+% Change this R_coeff to change the smoothness
 %of control action.
-R =  speye(n_deltau,n_deltau);
+R_coeff = Constants4Concentration.R_coeff;
+R =  R_coeff * speye(n_deltau,n_deltau);
 
 % reference
 n_ref = ny*Np;
@@ -54,7 +55,8 @@ reference = Constants4Concentration.reference;
 reference = reference*ones(n_ref,1);
 % only select the pipes now.
 n_Q = Np*ny;
-Q = speye(n_Q,n_Q);
+Q_coeff = Constants4Concentration.Q_coeff;
+Q = Q_coeff * speye(n_Q,n_Q);
 
 
 %DeltaU1 = (R + Z'*Q*Z)^(-1)*Z'*Q*(reference-W*Xa);

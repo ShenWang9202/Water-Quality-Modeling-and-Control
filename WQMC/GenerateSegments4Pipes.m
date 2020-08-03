@@ -11,9 +11,10 @@ switch Network
         NumberofSegment4Pipes = LinkLengthPipe/50; % ones(size(LinkLengthPipe))*3; 
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
     case 7
-        NumberofSegment4Pipes = LinkLengthPipe/20;
+        NumberofSegment4Pipes = LinkLengthPipe/50;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
-        NumberofSegment4Pipes(NumberofSegment4Pipes<200) = 200;
+        NumberofSegment4Pipes(NumberofSegment4Pipes<10) = 10;
+        NumberofSegment4Pipes(NumberofSegment4Pipes>200) = 200;
         
     case 9 % net3 network
         extraSeg = 10;
@@ -52,11 +53,11 @@ switch Network
             end
         end
         
-        NumberofSegment4Pipes = LinkLengthPipe/30;
+        NumberofSegment4Pipes = LinkLengthPipe/25;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
         NumberofSegment4Pipes(NumberofSegment4Pipes<20) = 20;
         NumberofSegment4Pipes(NumberofSegment4Pipes>500) = 500;
-        %NumberofSegment4Pipes(1:3) = 1000;
+        NumberofSegment4Pipes(1:3) = 90;
         
         
         % allResult = d.getComputedHydraulicTimeSeries;

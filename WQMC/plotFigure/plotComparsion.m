@@ -66,7 +66,7 @@ if(linkCount > 20)
         InterestedID = InterestedID';
         LDEGroup = LDEResult1(1:SimutionTimeInMinute,LinkIndex);
         %         plotInterestedComponents(InterestedID,LinkID4Legend,LDEGroup,'LDE');
-        EPANETGroup = epanetResult1(1:SimutionTimeInMinute,LinkIndex);
+        EPANETGroup = epanetResult(1:SimutionTimeInMinute,LinkIndex);
         %         plotInterestedComponents(InterestedID,LinkID4Legend,EPANETGroup,'EPANET');
         Calculate_Error_EPANET_LDE_Group(InterestedID,LinkID4Legend,EPANETGroup,LDEGroup)
     end

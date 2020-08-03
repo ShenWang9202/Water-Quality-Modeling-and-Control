@@ -39,8 +39,7 @@ if(COMPARE == 1) % when compare LDE with EPANET, We have to make all uncertainty
     DEMAND_UNCERTAINTY = 0;
 end
 
-Network = 1; % Don't use case 2
-Network = 9; % Don't use case 2
+Network = Constants4Concentration.Network;
 switch Network
     case 1
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
@@ -132,9 +131,12 @@ switch Network
         flowRate_B = [100]; % unit: GPM
         Price_B = [1];
     case 9
-        Location_B = {'J199','J161','J111','J121','J149','J197','J211'}; % NodeID here;
-        flowRate_B = [10,10,10,10,10,10,10]; % unit: GPM
-        Price_B = [1,1,1,1,1,1,1];
+%         Location_B = {'J199','J161','J111','J121','J149','J197','J211'}; % NodeID here;
+%         flowRate_B = [10,10,10,10,10,10,10]; % unit: GPM
+%         Price_B = [1,1,1,1,1,1,1];
+        Location_B = {'J121'}; % NodeID here;
+        flowRate_B = [10]; % unit: GPM
+        Price_B = [1];
     otherwise
         disp('other value')
 end
@@ -454,7 +456,7 @@ if ~COMPARE
     plotControlAction
 end
 % plot imagine of segment concentration of intested pipe
-InterestedID = LinkID4Legend(PipeIndex)';%{'P103','P105','P107','P109','P111'};
+InterestedID = {'P20','P60'}; %LinkID4Legend(PipeIndex)';%
 plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID4Legend);
 
 save(filename)
