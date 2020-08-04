@@ -4,7 +4,6 @@ delta_t = CurrentValue.delta_t;
 CurrentFlow = CurrentValue.CurrentFlow;
 CurrentFlow = CurrentFlow';
 
-
 % Step 1,update connection matrix at first.
 
 % We need to update the old A matrix according our WFP solution,
@@ -15,11 +14,8 @@ CurrentFlow = CurrentFlow';
 % Fine the negative index in PipeFlow vector
 %old = aux.MassEnergyMatrix
 
-
 CurrentFlowWithDirection = CurrentFlow;
 MassEnergyMatrixWithDirection = aux.MassEnergyMatrix;
-
-
 
 PipeFlow = CurrentFlow(IndexInVar.PipeIndex);
 NegativePipeIndex = find(PipeFlow<0);
@@ -48,19 +44,10 @@ PipeIndex = IndexInVar.PipeIndex;
 PumpIndex = IndexInVar.PumpIndex;
 ValveIndex = IndexInVar.ValveIndex;
 
-JunctionCount= ElementCount.JunctionCount;
-ReservoirCount = ElementCount.ReservoirCount;
-TankCount = ElementCount.TankCount;
-PipeCount = ElementCount.PipeCount;
-PumpCount= ElementCount.PumpCount;
-ValveCount = ElementCount.ValveCount;
-
-
-JunctionCount = double(JunctionCount);
-ReservoirCount = double(ReservoirCount);
-TankCount = double(TankCount);
+JunctionCount = double(ElementCount.JunctionCount);
+ReservoirCount = double(ElementCount.ReservoirCount);
+TankCount = double(ElementCount.TankCount);
 nodeCount = JunctionCount + ReservoirCount + TankCount;
-NumberofSegment = Constants4Concentration.NumberofSegment;
 
 % Step 2, if all flows are positive, we can continue on
 
@@ -76,8 +63,11 @@ B_R = sparse(ReservoirCount,nodeCount);
 
 % for tanks
 [A_TK,B_TK,~] = ConstructMatrixForTank(delta_t,CurrentFlow,CurrentNodeTankVolume,TankMassMatrix,ElementCount,IndexInVar,aux,q_B,flipped);
+
 % for junctions in none D set
-[A_J, B_J] = ConstructMatrixForJunction_NoneD(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B,aux);
+JunctionDecayRate_sec = PipeReactionCoeff(1); % all pipes has the same decay rate, and we just use the first one.
+JunctionDecayRate_step = JunctionDecayRate_sec * delta_t;
+[A_J, B_J] = ConstructMatrixForJunction_NoneD(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B,aux,JunctionDecayRate_step);
 
 % for Pumps
 % B_M = sparse(PumpCount,nodeCount);
@@ -92,7 +82,7 @@ EnergyMatrixValve= MassEnergyMatrix(ValveIndex,:);
 [A_W,B_W] = ConstructMatrixForValveNew(EnergyMatrixValve,UpstreamNode_Amatrix,UpstreamNode_Bmatrix);
 
 % for junctions in D set
-[A_J, B_J] = ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B, A_J, B_J, aux);
+[A_J, B_J] = ConstructMatrixForJunction_D(CurrentFlow,MassEnergyMatrix,flipped,ElementCount,IndexInVar,q_B, A_J, B_J, aux, JunctionDecayRate_step);
 
 % for Pipes (non-first segments)
 % B_P = sparse(NumberofSegment*PipeCount,nodeCount);

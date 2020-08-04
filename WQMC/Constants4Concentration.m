@@ -6,7 +6,7 @@ classdef Constants4Concentration
         ONLY_COMPARE = 0;
         
         
-        SimutionTimeInMinute = 4*60; 
+        SimutionTimeInMinute = 24*60; 
         %SimutionTimeInMinute = 4*24*60; % Simulate Net1 for 4 day
         SimutionTimeInMinute4RBC = 24*60;  
         % Interval (in minutes) of injecting chlorin from boosters (must be a factor or divisor of Hq_min)
@@ -19,13 +19,13 @@ classdef Constants4Concentration
         % The price of injecting chlorine,
         Price_Weight = 0.001;
         % The setpoint or reference of chlorin concentration in WDNs (any value between 0.4~4mg/L);
-        reference = 2;
+        reference = 1;
         % Q coefficent is an index of pushing the concentration in links
         % and nodes to the reference value
-        Q_coeff = 50;
+        Q_coeff = 3;
         % R coefficent is an index of controlling the smoothness of control
         % actions
-        R_coeff = 1;
+        R_coeff = 5;
 
 
         DayInSecond = 86400;

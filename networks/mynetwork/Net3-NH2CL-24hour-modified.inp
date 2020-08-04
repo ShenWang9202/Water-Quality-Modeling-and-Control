@@ -314,7 +314,7 @@ Link 330 OPEN IF Node 1 ABOVE 19.1
 35               	0.5
 40               	0.5
 50               	0.5
-60               	0.8
+60               	0.5
 601               	0.5
 61               	0.5
 101               	0.5
@@ -400,15 +400,15 @@ Link 330 OPEN IF Node 1 ABOVE 19.1
 271               	0.5
 273               	0.5
 275               	0.5
-4               	0.8
-5               	1
+4               	0.5
+5               	0.5
 1               	0.5
 2               	0.5
 3               	0.5
 
 [SOURCES]
 ;Node            	Type        	Quality     	Pattern
- 4               	CONCEN      	0.8         	
+ 4               	CONCEN      	0.5         	
 
 [REACTIONS]
 ;Type     	Pipe/Tank       	Coefficient

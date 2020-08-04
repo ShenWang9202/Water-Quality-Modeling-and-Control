@@ -13,7 +13,7 @@ for i = 1:TimeInMinutes
     errorVetor(i) = norm(Error(:,i))/ norm(EPANET_Result(:,i));
 end
 
-figure1 = figure
+figure1 = figure;
 fontsize = 36;
 plot(errorVetor,'LineWidth',2);
 xticks([0 360 720 1080 1440])

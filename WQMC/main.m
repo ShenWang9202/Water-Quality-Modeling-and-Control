@@ -131,12 +131,12 @@ switch Network
         flowRate_B = [100]; % unit: GPM
         Price_B = [1];
     case 9
-%         Location_B = {'J199','J161','J111','J121','J149','J197','J211'}; % NodeID here;
-%         flowRate_B = [10,10,10,10,10,10,10]; % unit: GPM
-%         Price_B = [1,1,1,1,1,1,1];
-        Location_B = {'J121'}; % NodeID here;
-        flowRate_B = [10]; % unit: GPM
-        Price_B = [1];
+        Location_B = {'J199','J161','J111','J121','J149','J197','J211'}; % NodeID here;
+        flowRate_B = [10,10,10,10,10,10,10]; % unit: GPM
+        Price_B = [1,1,1,1,1,1,1];
+%         Location_B = {'J123'}; % NodeID here;
+%         flowRate_B = [10]; % unit: GPM
+%         Price_B = [1];
     otherwise
         disp('other value')
 end
@@ -456,7 +456,7 @@ if ~COMPARE
     plotControlAction
 end
 % plot imagine of segment concentration of intested pipe
-InterestedID = {'P20','P60'}; %LinkID4Legend(PipeIndex)';%
+InterestedID = LinkID4Legend(PipeIndex)';% {'P20','P60',}; %
 plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID4Legend);
 
 save(filename)

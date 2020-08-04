@@ -53,7 +53,7 @@ switch Network
             end
         end
         
-        NumberofSegment4Pipes = LinkLengthPipe/25;
+        NumberofSegment4Pipes = LinkLengthPipe/40;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
         NumberofSegment4Pipes(NumberofSegment4Pipes<20) = 20;
         NumberofSegment4Pipes(NumberofSegment4Pipes>500) = 500;
