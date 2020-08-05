@@ -1,6 +1,10 @@
 function errorVetor = Calculate_Error_EPANET_LDE(EPANET_Result,LDE_Result)
 % we use norm 2 relative error
 % https://www.netlib.org/lapack/lug/node75.html
+EPANET_Result_X = EPANET_Result';
+LDE_Result_X = LDE_Result';
+d1=dtw(EPANET_Result_X,LDE_Result_X,30);
+
 EPANET_Result = EPANET_Result(:,2:end);
 LDE_Result = LDE_Result(:,1:end-1);
 LDE_Result(:,1) = EPANET_Result(:,1);

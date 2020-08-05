@@ -19,7 +19,7 @@ classdef Constants4Concentration
         % The price of injecting chlorine,
         Price_Weight = 0.001;
         % The setpoint or reference of chlorin concentration in WDNs (any value between 0.4~4mg/L);
-        reference = 1;
+        reference = 0.6;
         % Q coefficent is an index of pushing the concentration in links
         % and nodes to the reference value
         Q_coeff = 3;

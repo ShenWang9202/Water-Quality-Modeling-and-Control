@@ -35,25 +35,28 @@ Kw_all = d.getLinkWallReactionCoeff;
 JunctionCount = double(d.getNodeJunctionCount);
 ReservoirCount = double(d.getNodeReservoirCount);
 TankCount = double(d.getNodeTankCount);
+nodeCount = JunctionCount + ReservoirCount + TankCount;
 
 PipeCount = double(d.getLinkPipeCount);
 PumpCount = double(d.getLinkPumpCount);
 ValveCount = double(d.getLinkValveCount);
+linkCount = PipeCount + PumpCount + ValveCount;
+
 
 ElementCount = struct('JunctionCount',JunctionCount,...
     'ReservoirCount',ReservoirCount,...
     'TankCount',TankCount,...
+    'nodeCount',nodeCount,...
     'PipeCount',PipeCount,...
     'PumpCount',PumpCount,...
-    'ValveCount',ValveCount);
-
-
+    'ValveCount',ValveCount,...
+    'linkCount',linkCount);
 
 
 % Pipes with same number of segments
 
 % define the number of segment
-NumberofSegment = Constants4Concentration.NumberofSegment;
+% NumberofSegment = Constants4Concentration.NumberofSegment;
 
 % so the total size of x
 %NumberofX = double(JunctionCount + ReservoirCount + TankCount + ...
@@ -91,10 +94,6 @@ Pipe_CStartIndex(1) = BaseCount4Next+1;
 for i = 2:PipeCount
     Pipe_CStartIndex(i) = Pipe_CStartIndex(i-1) + NumberofSegment4Pipes(i-1);
 end
-
-
-
-
 
 % Pump Concentration index in x
 % BaseCount4Next = BaseCount4Next + PipeCount * NumberofSegment;

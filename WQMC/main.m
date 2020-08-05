@@ -28,7 +28,7 @@ Demand_Unc = 0.1;
 UNKNOW_UNCERTAINTY = 0;
 % Parameter uncertainty on or off
 
-PARAMETER_UNCERTAINTY = 1;
+PARAMETER_UNCERTAINTY = 0;
 Kb_uncertainty = 0.1;
 Kw_uncertainty = 0.1;
 
@@ -86,7 +86,7 @@ switch Network
         NetworkName = 'Fournode-Cl-As-1.inp';
     case 9
         %NetworkName = 'Net3-NH2CL-24hour-4.inp'; % this is used to test the topology changes
-        NetworkName = 'Net3-NH2CL-24hour-modified.inp';
+        NetworkName = 'Net3-NH2CL-24hour-modified.inp'; % 'Net3-NH2CL-24hour-zerovelocity.inp';%
         filename = 'Net3_1day.mat';
     otherwise
         disp('other value')
@@ -97,15 +97,17 @@ PrepareData4Control
 
 %% initialize concentration at nodes
 
-nx = NumberofX; % Number of states
-
 % initialize BOOSTER
 % flow of Booster, assume we put booster at each nodes, so the size of it
 % should be the number of nodes.
-JunctionCount = double(JunctionCount);
-ReservoirCount = double(ReservoirCount);
-TankCount = double(TankCount);
-nodeCount = JunctionCount + ReservoirCount + TankCount;
+nodeCount = ElementCount.nodeCount;
+NodeIndex = d.getNodeIndex;
+LinkIndex = nodeCount+d.getLinkIndex;
+NodeID = Variable_Symbol_Table2(NodeIndex,1);
+LinkID = Variable_Symbol_Table2(LinkIndex,1);
+
+PipeID = Variable_Symbol_Table2(PipeIndexInOrder,1);
+JunctionID = Variable_Symbol_Table2(JunctionIndexInOrder,1);
 
 switch Network
     case 1
@@ -118,29 +120,30 @@ switch Network
         Location_B = {'J3','J7'}; % NodeID here;
         flowRate_B = [10,10]; % unit: GPM
         Price_B = [1,1];
-        % the C_B is what we need find in MPC, useless here
-        %C_B = [1]; % unit: mg/L % Concentration of booster
+        TargetedPipeID =  PipeID([2]); % TRY [], PipeID([2]) PipeID([2,4,6]) PipeID([3,5,7])
     case {5,6,7}
         Location_B = {'J11','J22','J31'}; % NodeID here;
         flowRate_B = [10,10,10]; % unit: GPM
         Price_B = [1,1,1];
-        % the C_B is what we need find in MPC, useless here
-        %C_B = [1]; % unit: mg/L % Concentration of booster
+        TargetedPipeID = [];%PipeID([2,4,6,8]);
     case 8
         Location_B = {'J2'}; % NodeID here;
         flowRate_B = [100]; % unit: GPM
         Price_B = [1];
     case 9
-        Location_B = {'J199','J161','J111','J121','J149','J197','J211'}; % NodeID here;
-        flowRate_B = [10,10,10,10,10,10,10]; % unit: GPM
-        Price_B = [1,1,1,1,1,1,1];
+        Location_B = {'J217','J237','J247'}; % NodeID here;
+        flowRate_B = 10*ones(size(Location_B)); % unit: GPM
+        Price_B = ones(size(Location_B));
+        TargetedPipeID = [];%PipeID;
 %         Location_B = {'J123'}; % NodeID here;
 %         flowRate_B = [10]; % unit: GPM
 %         Price_B = [1];
     otherwise
         disp('other value')
 end
-NodeID = Variable_Symbol_Table2(1:nodeCount,1);
+
+
+
 %[q_B,C_B] = InitialBoosterFlow(nodeCount,Location_B,flowRate_B,NodeID,C_B);
 Price_B1 = Price_B';
 [q_B,Price_B,BoosterLocationIndex,BoosterCount] = InitialBooster(nodeCount,Location_B,flowRate_B,NodeID,Price_B);
@@ -189,9 +192,8 @@ end
 
 
 %% Construct aux struct
-
-aux = struct('NumberofSegment',NumberofSegment,...
-    'NumberofSegment4Pipes',NumberofSegment4Pipes,...
+%'NumberofSegment',NumberofSegment,...
+aux = struct('NumberofSegment4Pipes',NumberofSegment4Pipes,...
     'LinkLengthPipe',LinkLengthPipe,...
     'LinkDiameterPipe',LinkDiameterPipe,...
     'TankBulkReactionCoeff',TankBulkReactionCoeff,...
@@ -205,6 +207,9 @@ aux = struct('NumberofSegment',NumberofSegment,...
     'BoosterCount',BoosterCount,...,
     'NodeNameID',{NodeNameID},...
     'LinkNameID',{LinkNameID},...
+    'NodeID',{NodeID},...
+    'LinkID',{LinkID},...
+    'TargetedPipeID',{TargetedPipeID},...
     'NodesConnectingLinksID',{NodesConnectingLinksID},...
     'COMPARE',COMPARE);
 %    'Price_B',Price_B,...,
@@ -229,6 +234,8 @@ ControlActionU_LDE = [];
 JunctionActualDemand = [];
 UeachIntervalforEPANET = [];
 PreviousSystemDynamicMatrix = [];
+
+VelocityPipe = [];
 
 
 Hq_min = Constants4Concentration.Hq_min;% I need that all concention 5 minutes later are  in 0.2 mg 4 mg
@@ -256,6 +263,10 @@ if DEMAND_UNCERTAINTY
     FlowWithoutUncertainty = HydraulicInfoWithoutUncertainty.Flow;
     VelocityPipeWithoutUncertainty = HydraulicInfoWithoutUncertainty.Velocity;
 end
+
+
+
+
 % profile on
 tic
 while (tleft > 0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
@@ -285,6 +296,7 @@ while (tleft > 0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
         end
         
         CurrentVelocityPipe = CurrentVelocity(:,PipeIndex);
+        VelocityPipe = [VelocityPipe; CurrentVelocityPipe];
         if PARAMETER_UNCERTAINTY
             Kb_all = add_uncertainty(Kb_all, Kb_uncertainty);
             Kw_all = add_uncertainty(Kw_all, Kw_uncertainty);
@@ -334,11 +346,10 @@ while (tleft > 0 && tInMin < SimutionTimeInMinute && delta_t <= 60)
         % concentration at J2 P23 as o.5 mg/L
         
         if(UNKNOW_UNCERTAINTY==1 && tInMin == Unknown_Happen_Time)
-            %x_estimated = Hijack_x_estimated(x_estimated);
+            % To do: this Hack function into the different number of
+            % segmetns version. Before doing this, do not test UNKNOW_UNCERTAINTY
             
             % orangize parameter into a struct
-            PipeID = Variable_Symbol_Table2(PipeIndexInOrder,1);
-            JunctionID = Variable_Symbol_Table2(JunctionIndexInOrder,1);
             nsegment = aux.NumberofSegment;
             Struct4Hack = struct('NumberofSegment',nsegment,...
                 'PipeID',{PipeID},...
@@ -432,20 +443,16 @@ NumberofSegment4Pipes
 
 disp('Done!! Start to organize data')
 
-NodeIndex = d.getNodeIndex;
-LinkIndex = nodeCount+d.getLinkIndex;
-NodeID4Legend = Variable_Symbol_Table2(NodeIndex,1);
-LinkID4Legend = Variable_Symbol_Table2(LinkIndex,1);
 
 figure
 plot(JunctionActualDemand)
 xlabel('Time (minute)')
 ylabel('Demand at junctions (GPM)')
-legend(NodeID4Legend)
+legend(NodeID)
 
 figure
 plot(Flow)
-legend(LinkID4Legend)
+legend(LinkID)
 xlabel('Time (minute)')
 ylabel('Flow rates in links (GPM)')
 
@@ -456,7 +463,7 @@ if ~COMPARE
     plotControlAction
 end
 % plot imagine of segment concentration of intested pipe
-InterestedID = LinkID4Legend(PipeIndex)';% {'P20','P60',}; %
-plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID4Legend);
+InterestedID = {'P251','P257'}; % LinkID(PipeIndex)';% 
+plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID);
 
 save(filename)

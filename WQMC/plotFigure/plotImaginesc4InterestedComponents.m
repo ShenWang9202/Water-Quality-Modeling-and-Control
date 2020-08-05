@@ -1,8 +1,6 @@
 function plotImaginesc4InterestedComponents(X_Min,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID4Legend)
 
 [~,n] = size(InterestedID);
-% basePipeCIndex = min(Pipe_CIndex);
-% First = basePipeCIndex:basePipeCIndex+NumberofSegment-1;
 InterestedPipeIndices = [];
 for i = 1:n
     % find index according to ID.

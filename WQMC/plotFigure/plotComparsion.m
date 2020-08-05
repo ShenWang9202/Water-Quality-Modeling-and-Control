@@ -2,13 +2,13 @@
 figure
 subplot(2,1,1)
 plot(QsN_Control);
-legend(NodeID4Legend,'Location','eastoutside')
+legend(NodeID,'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations at junctions (mg/L)')
 title('EPAENT result')
 subplot(2,1,2)
 plot(QsL_Control);
-legend(LinkID4Legend,'Location','eastoutside')
+legend(LinkID,'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations in links (mg/L)')
 
@@ -25,13 +25,13 @@ X_Junction_control_result =  X_Min_Average(:,NodeJunctionIndex);
 figure
 subplot(2,1,1)
 plot(X_node_control_result);
-legend(NodeID4Legend,'Location','eastoutside')
+legend(NodeID,'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations at junctions (mg/L)')
 title('LDE result')
 subplot(2,1,2)
 plot(X_link_control_result);
-legend(LinkID4Legend,'Location','eastoutside')
+legend(LinkID,'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations in links (mg/L)')
 
@@ -54,21 +54,21 @@ Calculate_Error_EPANET_LDE(epanetResult',LDEResult1');
 % For large scale network, we compare them in group
 
 linkCount = d.getLinkCount;
-if(linkCount > 20)
-    eachGroup = 10;
+if(linkCount > 2)
+    eachGroup = 2;
     numberOfGroups = ceil(linkCount/eachGroup);
     for i = 1:numberOfGroups
         range = ((i-1)*eachGroup+1):(i*eachGroup);
         if i == numberOfGroups
             range = ((i-1)*10+1):linkCount;
         end
-        InterestedID = LinkID4Legend(range,:);
+        InterestedID = LinkID(range,:);
         InterestedID = InterestedID';
         LDEGroup = LDEResult1(1:SimutionTimeInMinute,LinkIndex);
-        %         plotInterestedComponents(InterestedID,LinkID4Legend,LDEGroup,'LDE');
+        %         plotInterestedComponents(InterestedID,LinkID,LDEGroup,'LDE');
         EPANETGroup = epanetResult(1:SimutionTimeInMinute,LinkIndex);
-        %         plotInterestedComponents(InterestedID,LinkID4Legend,EPANETGroup,'EPANET');
-        Calculate_Error_EPANET_LDE_Group(InterestedID,LinkID4Legend,EPANETGroup,LDEGroup)
+        %         plotInterestedComponents(InterestedID,LinkID,EPANETGroup,'EPANET');
+        Calculate_Error_EPANET_LDE_Group(InterestedID,LinkID,EPANETGroup,LDEGroup)
     end
 end
 

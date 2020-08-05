@@ -34,11 +34,11 @@ end
 %%
 CurrentNodeTankVolume = CurrentValue.CurrentNodeTankVolume;
 PipeReactionCoeff = CurrentValue.PipeReactionCoeff;
-Np = CurrentValue.Np;
 
-JunctionMassMatrix = aux.JunctionMassMatrix;
 TankMassMatrix = aux.TankMassMatrix;
 MassEnergyMatrix = aux.MassEnergyMatrix;
+NumberofSegment4Pipes = aux.NumberofSegment4Pipes;
+LinkID = aux.LinkID;
 
 PipeIndex = IndexInVar.PipeIndex;
 PumpIndex = IndexInVar.PumpIndex;
@@ -46,8 +46,7 @@ ValveIndex = IndexInVar.ValveIndex;
 
 JunctionCount = double(ElementCount.JunctionCount);
 ReservoirCount = double(ElementCount.ReservoirCount);
-TankCount = double(ElementCount.TankCount);
-nodeCount = JunctionCount + ReservoirCount + TankCount;
+nodeCount = double(ElementCount.nodeCount);
 
 % Step 2, if all flows are positive, we can continue on
 
@@ -87,7 +86,7 @@ EnergyMatrixValve= MassEnergyMatrix(ValveIndex,:);
 % for Pipes (non-first segments)
 % B_P = sparse(NumberofSegment*PipeCount,nodeCount);
 
-B_P = sparse(sum(aux.NumberofSegment4Pipes),nodeCount);
+B_P = sparse(sum(NumberofSegment4Pipes),nodeCount);
 EnergyMatrixPipe= MassEnergyMatrixWithDirection(PipeIndex,:);
 
 
@@ -113,8 +112,10 @@ B = [B_J;B_R;B_TK;B_P;B_M;B_W];
 
 nx = IndexInVar.NumberofX; % Number of states
 
-C = generateC(nx);
-
+Pipe_CStartIndex = IndexInVar.Pipe_CStartIndex;
+TargetedPipeID = aux.TargetedPipeID;
+C = generateC(TargetedPipeID,LinkID,NumberofSegment4Pipes,Pipe_CStartIndex,JunctionCount,nx);
+%C = speye(nx,nx);
 % MAKE A B C as Sparse to save memory
 A = sparse(A);
 B = sparse(B);
