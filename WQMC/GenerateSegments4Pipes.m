@@ -15,7 +15,7 @@ switch Network
         
     case 9 % net3 network
         NumberofSegment4Pipes = LinkLengthPipe/10;
-        NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
+
         NumberofSegment4Pipes(NumberofSegment4Pipes<20) = 20;
         NumberofSegment4Pipes(NumberofSegment4Pipes>500) = 500;
         NumberofSegment4Pipes(1:3) = 90;
@@ -23,9 +23,13 @@ switch Network
         LinkVelocity = d.getBinComputedLinkVelocity;
         PipeVelocity = LinkVelocity(:,PipeIndex);
         maxPipeVelocity = max(PipeVelocity);
-        doubledIndex = find(maxPipeVelocity > 2);
-        
-         NumberofSegment4Pipes(doubledIndex) = NumberofSegment4Pipes(doubledIndex) * 2;
+        doubledIndex = find(maxPipeVelocity > 1 & maxPipeVelocity <= 2);
+        NumberofSegment4Pipes(doubledIndex) = NumberofSegment4Pipes(doubledIndex) * 1.5;
+        doubledIndex = find(maxPipeVelocity > 2 & maxPipeVelocity <= 4);
+        NumberofSegment4Pipes(doubledIndex) = NumberofSegment4Pipes(doubledIndex) * 2;
+        doubledIndex = find(maxPipeVelocity > 4);
+        NumberofSegment4Pipes(doubledIndex) = NumberofSegment4Pipes(doubledIndex) * 2.5;
+        NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
         
         
         % allResult = d.getComputedHydraulicTimeSeries;
