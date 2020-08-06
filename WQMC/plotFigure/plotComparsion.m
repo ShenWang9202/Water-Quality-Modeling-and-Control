@@ -1,14 +1,40 @@
+InterestedID = {'J211','J213','J215','J217','J219','J225','229','237','J231','J239',...
+    'J247','J239','J249','J243','J255','J251',...
+    'J50','J253'};%NodeID';
+InterestedID = unique(InterestedID);
+IDcell = NodeID;
+[~,n] = size(InterestedID);
+InterestedJunctionIndices = [];
+for i = 1:n
+    % find index according to ID.
+    InterestedJunctionIndices = [InterestedJunctionIndices findIndexByID(InterestedID{i},IDcell)];
+end
+
+
+InterestedID = {'P245','P247','P249','P251','P257','P261','P269',...
+    'P263','P271','P273','P275','P281','P283','P285','P289',...
+        'P287','P291','P293','P295','P281','P283','P285'
+    };%LinkID';
+InterestedID = unique(InterestedID);
+IDcell = LinkID;
+[~,n] = size(InterestedID);
+InterestedPipeIndices = [];
+for i = 1:n
+    % find index according to ID.
+    InterestedPipeIndices = [InterestedPipeIndices findIndexByID(InterestedID{i},IDcell)];
+end
+
 
 figure
 subplot(2,1,1)
-plot(QsN_Control);
-legend(NodeID,'Location','eastoutside')
+plot(QsN_Control(:,InterestedJunctionIndices));
+legend(NodeID(InterestedJunctionIndices),'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations at junctions (mg/L)')
 title('EPAENT result')
 subplot(2,1,2)
-plot(QsL_Control);
-legend(LinkID,'Location','eastoutside')
+plot(QsL_Control(:,InterestedPipeIndices));
+legend(LinkID(InterestedPipeIndices),'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations in links (mg/L)')
 
@@ -19,19 +45,17 @@ X_Min_Average = X_Min_Average';
 X_node_control_result =  X_Min_Average(:,NodeIndex);
 X_link_control_result =  X_Min_Average(:,LinkIndex);
 X_Junction_control_result =  X_Min_Average(:,NodeJunctionIndex);
-% X_link_control_result =  X_Min_Average(:,LinkIndex);
-
 
 figure
 subplot(2,1,1)
-plot(X_node_control_result);
-legend(NodeID,'Location','eastoutside')
+plot(X_node_control_result(:,InterestedJunctionIndices));
+legend(NodeID(InterestedJunctionIndices),'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations at junctions (mg/L)')
 title('LDE result')
 subplot(2,1,2)
-plot(X_link_control_result);
-legend(LinkID,'Location','eastoutside')
+plot(X_link_control_result(:,InterestedPipeIndices));
+legend(LinkID(InterestedPipeIndices),'Location','eastoutside')
 xlabel('Time (minute)')
 ylabel('Concentrations in links (mg/L)')
 
