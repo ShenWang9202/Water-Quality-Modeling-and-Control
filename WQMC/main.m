@@ -463,7 +463,7 @@ if ~COMPARE
     plotControlAction
 end
 % plot imagine of segment concentration of intested pipe
-InterestedID = {'P245','P247','P249'}; % LinkID(PipeIndex)';% 
+InterestedID =  {'P245','P247','P249'}; % LinkID(PipeIndex)' ;%
 plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID);
 
 save(filename)

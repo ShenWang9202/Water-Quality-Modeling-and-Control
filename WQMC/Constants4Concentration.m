@@ -3,7 +3,7 @@ classdef Constants4Concentration
         Network = 9;% use 1 4 7 9 % Don't use case 2
         % Only do water quality simulation using LDE model and compare it
         % with EPANET (set ONLY_COMPARE variable as 1, otherwise, set it as 0)
-        ONLY_COMPARE = 0;
+        ONLY_COMPARE = 1;
         
         
         SimutionTimeInMinute = 24*60; 

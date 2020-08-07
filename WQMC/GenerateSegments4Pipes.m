@@ -39,7 +39,8 @@ switch Network
         tempID = tempID(PipeIndex);
         InterestedID = {'245','247','249','251','257','261','269',...
             '263','271','273','275','281','283','285','289',...
-            'P87','P91','P93','295','281','283','285'
+            '287','291','293','295','281','283','285',...
+            '186','187','183','185','125','107'
             };%LinkID';
         InterestedID = unique(InterestedID);
         IDcell = tempID;
@@ -50,8 +51,8 @@ switch Network
             InterestedPipeIndices = [InterestedPipeIndices findIndexByID(InterestedID{i},IDcell)];
         end
         
-        tempIndex = find(NumberofSegment4Pipes(InterestedPipeIndices) < 100);
-        NumberofSegment4Pipes(InterestedPipeIndices(tempIndex)) = 100;
+        tempIndex = find(NumberofSegment4Pipes(InterestedPipeIndices) < 400);
+        NumberofSegment4Pipes(InterestedPipeIndices(tempIndex)) = 400;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
         
         
