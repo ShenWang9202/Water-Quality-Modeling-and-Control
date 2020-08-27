@@ -52,13 +52,6 @@ switch Network
         JunctionID_Cell = {'J2'};
         Sudden_Concertration = 1.0; % Suddenly the concentration jumps to this value for no reason
         filename = 'Three-node_1day.mat';
-    case 2
-        % Don't not use one: Quality Timestep = 5 min, and  Global Bulk = -0.3, Global Wall=
-        % -1.0
-        NetworkName = 'tutorial8node.inp';
-    case 3
-        % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
-        NetworkName = 'tutorial8nodeTimeScale.inp';
     case 4
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall=
         % -0.0; initial value: J2 = 0.5 mg/L, J6 = 1.2 mg/L, R1 = 0.8 mg/L;
@@ -66,13 +59,6 @@ switch Network
         NetworkName = 'tutorial8node1inital.inp';
         %         NetworkName = 'tutorial8node1inital2.inp';
         filename = '8node_1day.mat';
-    case 5
-        % Quality Timestep = 1 min, and  Global Bulk = -0.5, Global Wall=
-        % -0.0;
-        NetworkName = 'Net1-1min.inp';
-    case 6
-        % The initial value is slightly different
-        NetworkName = 'Net1-1mininitial.inp';
     case 7
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
         NetworkName = 'Net1-1min-new-demand-pattern.inp';
@@ -81,9 +67,6 @@ switch Network
         JunctionID_Cell = {'J11','J21','J31'};
         Sudden_Concertration = 0.5;
         filename = 'Net1_4days.mat';
-    case 8
-        % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
-        NetworkName = 'Fournode-Cl-As-1.inp';
     case 9
         %NetworkName = 'Net3-NH2CL-24hour-4.inp'; % this is used to test the topology changes
         NetworkName = 'Net3-NH2CL-24hour-modified.inp'; % 'Net3-NH2CL-24hour-zerovelocity.inp';%
