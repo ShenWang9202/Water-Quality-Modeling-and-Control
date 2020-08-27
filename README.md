@@ -13,7 +13,7 @@ control-oriented modeling considering complicated components (junctions, reservo
 
 - The functions are in WQMC fold, and click "run" in Matlab after loading main.m
 
-  - Configurations for this WQMC are in Constants4Concentration.m. For example, seting Network = 1 and ONLY_COMPARE = 0 to simulate MPC control in 3-node network; seting Network = 1 and ONLY_COMPARE = 1 to simulate Water quality simulation; The total simualtion duration is controlled by SimutionTimeInMinute = 24*60; control/prediction horizon is set by Hq_min = 5;
+  - Configurations for this WQMC are in Constants4Concentration.m. For example, setting Network = 1 and ONLY_COMPARE = 0 to simulate MPC control in 3-node network; setting Network = 1 and ONLY_COMPARE = 1 to simulate Water quality simulation; The total simualtion duration is controlled by SimutionTimeInMinute = 24*60; control/prediction horizon is set by Hq_min = 5;
 
 
   - We now only give four simple examples (3-node, 8-node, Net1, and Net3), but our code is general for all kinds of networks. The readers are welcome to extend their own examples.
