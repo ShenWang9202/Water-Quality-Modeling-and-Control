@@ -1,6 +1,6 @@
 faceColor = 'b';
 transparency = 0.2;
-fontSize = 40;
+fontSize = 41;
 
 ControlledJunctionID = {'J211','J213','J215','J219','J225','229','J231','J239',...
     'J239','J249','J243','J255','J251',...
@@ -116,27 +116,26 @@ hold on
 
 xticks([0 360 720 1080 1440]);
 xticklabels({'0','360','720','1080','1440'})
-xlim([0,1440]);
+xlim([0,1443]);
 
 yticks([0.2 0.6 1]);
 yticklabels({'0.2','0.6','1'})
-ylim([0.18,1.2]);
+ylim([0.18,1.1]);
 
-% xlabel('Time (minute)','FontSize',fontSize,'interpreter','latex')
-ylabel('Concentration (mg/L)','FontSize',fontSize,'interpreter','latex')
-
-
-
+xlabel('Time (minute)','FontSize',fontSize,'interpreter','latex')
+ylabel({'Concentration'; '(mg/L)'},'FontSize',fontSize,'interpreter','latex')
 
 temp = NodeID(InterestedIndirectedControlledJunctionIndices);
 legendJunctionID = ['Range Zone';'Average Value';temp;'Range Zone';'Average Value'];
 lgd = legend(legendJunctionID,'Location','northwest','Orientation','horizontal');
 lgd.NumColumns = 4;
-lgd.FontSize = fontSize-4;
+lgd.FontSize = fontSize-2;
 set(lgd,'box','off');
 set(lgd,'Interpreter','Latex');
 
-set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 7])
+box on
+set(gca, 'TickLabelInterpreter', 'latex','fontsize',fontSize,'YGrid','off','XGrid','on');
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 6])
 print(fig,['ControlledJunctions_Net3','Area'],'-depsc2','-r300');
 print(fig,['ControlledJunctions_Net3','Area'],'-dpng','-r300');
 
@@ -202,26 +201,26 @@ hold on
 plot(x,meanData',faceColor,'DisplayName','Average Value','LineWidth',1);
 
 set(gca, 'TickLabelInterpreter', 'latex','fontsize',fontSize-2,'YGrid','off','XGrid','on');
-
+box on
 % plot(X_link_control_result_no_control(:,InteresetedDirectedControlledPipeIndices),'-.');
 
 xticks([0 360 720 1080 1440]);
 xticklabels({'0','360','720','1080','1440'})
-xlim([0,1440]);
+xlim([0,1443]);
 
 yticks([0.2 0.4 0.6]);
 yticklabels({'0.2','0.4','0.6'})
-ylim([0.18,0.9]);
+ylim([0.18,0.8]);
 
-% xlabel('Time (minute)','FontSize',fontSize,'interpreter','latex')
-ylabel('Concentration (mg/L)','FontSize',fontSize,'interpreter','latex')
+xlabel('Time (minute)','FontSize',fontSize,'interpreter','latex')
+ylabel({'Concentration'; '(mg/L)'},'FontSize',fontSize,'interpreter','latex')
 
 temp = LinkID(InteresetedDirectedControlledPipeIndices);
 legendPipeID = ['Range Zone';'Average Value';temp;'Range Zone';'Average Value'];
 
 lgd = legend(legendPipeID,'Location','northwest','Orientation','horizontal');
 lgd.NumColumns = 4;
-lgd.FontSize = fontSize-4;
+lgd.FontSize = fontSize-2;
 set(lgd,'box','off');
 set(lgd,'Interpreter','Latex');
 
@@ -239,6 +238,6 @@ set(lgd,'Interpreter','Latex');
 % xlabel(han,'Time (minute)','FontSize',fontSize,'interpreter','latex')
 % ylabel(han,'Concentration (mg/L)','FontSize',fontSize,'interpreter','latex')
 %% print 
-set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 7])
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 6])
 print(fig,['ControlledPipes_Net3','Area'],'-depsc2','-r300');
 print(fig,['ControlledPipes_Net3','Area'],'-dpng','-r300');

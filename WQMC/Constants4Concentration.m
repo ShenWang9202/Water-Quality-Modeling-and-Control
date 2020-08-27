@@ -1,6 +1,6 @@
 classdef Constants4Concentration
     properties( Constant = true )
-        Network = 9;% use 1 4 7 9 % Don't use case 2
+        Network = 7;% use 1 4 7 9 % Don't use case 2
         % Only do water quality simulation using LDE model and compare it
         % with EPANET (set ONLY_COMPARE variable as 1, otherwise, set it as 0)
         ONLY_COMPARE = 1;
@@ -13,7 +13,8 @@ classdef Constants4Concentration
         T_booster_min = 1;
         % Control Horizen (in minutes) of MPC algorithm (must be a factor or divisor of Hydraulic Time Step, which is 60 minutes defaultly in our case studies)
         Hq_min = 5;
-        % How many segements of a pipe.
+        % How many segements of a pipe. This is deprecated; see
+        % GenerateSegments4Pipes.m for details.
         NumberofSegment = 100;
         
         % The price of injecting chlorine,

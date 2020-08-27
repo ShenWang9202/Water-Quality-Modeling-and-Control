@@ -13,7 +13,7 @@ set(lgd,'box','off')
 set(lgd,'Interpreter','Latex');
 
 xlabel('Time (minute)','FontSize',fontsize,'interpreter','latex')
-ylabel({'Mass rate at ';'boosters';'(mg/minute)'},'FontSize',fontsize-3,'interpreter','latex')
+ylabel({'Mass rate at ';'boosters';'(mg/minute)'},'FontSize',fontsize+4,'interpreter','latex')
 set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 5])
 print(figure1,'ControlActionU_net3','-depsc2','-r300');
 print(figure1,'ControlActionU_net3','-dpng','-r300');

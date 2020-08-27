@@ -1,6 +1,6 @@
 faceColor = 'b';
 transparency = 0.2;
-fontSize = 30;
+fontSize = 40;
 
 DirectedControlledJunctionID = {'J217','J237','J247'};%NodeID';
 InterestedID = unique(DirectedControlledJunctionID);

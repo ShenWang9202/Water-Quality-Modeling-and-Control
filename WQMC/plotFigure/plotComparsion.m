@@ -1,6 +1,19 @@
-InterestedID = {'J211','J213','J215','J217','J219','J225','229','237','J231','J239',...
-    'J247','J239','J249','J243','J255','J251',...
-    'J50','J253'};%NodeID';
+InterestedID = [];
+switch Network
+    case 1
+        InterestedID = NodeID';
+    case 4
+        InterestedID = NodeID';
+    case 7
+        InterestedID = NodeID';
+    case 9
+        InterestedID = {'J211','J213','J215','J217','J219','J225','229','237','J231','J239',...
+            'J247','J239','J249','J243','J255','J251',...
+            'J50','J253'};%NodeID';
+    otherwise
+        disp('other value')
+end
+
 InterestedID = unique(InterestedID);
 IDcell = NodeID;
 [~,n] = size(InterestedID);
@@ -10,11 +23,24 @@ for i = 1:n
     InterestedJunctionIndices = [InterestedJunctionIndices findIndexByID(InterestedID{i},IDcell)];
 end
 
+InterestedID = [];
+switch Network
+    case 1
+        InterestedID = LinkID';
+    case 4
+        InterestedID = LinkID';
+    case 7
+        InterestedID = LinkID';
+    case 9
+        InterestedID = {'P245','P247','P249','P251','P257','P261','P269',...
+            'P263','P271','P273','P275','P281','P283','P285','P289',...
+            'P287','P291','P293','P295','P281','P283','P285'
+            };%LinkID';
+    otherwise
+        disp('other value')
+end
 
-InterestedID = {'P245','P247','P249','P251','P257','P261','P269',...
-    'P263','P271','P273','P275','P281','P283','P285','P289',...
-        'P287','P291','P293','P295','P281','P283','P285'
-    };%LinkID';
+
 InterestedID = unique(InterestedID);
 IDcell = LinkID;
 [~,n] = size(InterestedID);

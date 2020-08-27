@@ -116,6 +116,7 @@ switch Network
         Price_B = [1];
         % the C_B is what we need find in MPC, useless here
         %C_B = [1]; % unit: mg/L % Concentration of booster
+        TargetedPipeID = [];%PipeID([2,4,6,8]);
     case {2,3,4}
         Location_B = {'J3','J7'}; % NodeID here;
         flowRate_B = [10,10]; % unit: GPM
@@ -462,8 +463,20 @@ plotComparsion
 if ~COMPARE
     plotControlAction
 end
-% plot imagine of segment concentration of intested pipe
-InterestedID =  {'P245','P247','P249'}; % LinkID(PipeIndex)' ;%
-plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID);
 
+% plot imagine of segment concentration of intested pipe
+InterestedID = [];
+switch Network
+    case 1
+        InterestedID = LinkID(PipeIndex)';
+    case 4
+        InterestedID = LinkID(PipeIndex)';
+    case 7
+        InterestedID = LinkID(PipeIndex)';
+    case 9
+        InterestedID =  {'P245','P247','P249'}; % LinkID(PipeIndex)' ;%
+    otherwise
+        disp('other value')
+end
+plotImaginesc4InterestedComponents(XX_estimated,Pipe_CStartIndex,NumberofSegment4Pipes,InterestedID,LinkID);
 save(filename)

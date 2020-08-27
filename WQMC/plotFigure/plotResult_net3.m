@@ -1,6 +1,8 @@
 clear 
 
 load('Net3_1day_Without_Control.mat')
+Calculate_Error_EPANET_LDE(epanetResult',LDEResult1')
+
 X_node_control_result_no_control = X_node_control_result(1:1440,:);
 X_link_control_result_no_control = X_link_control_result(1:1440,:);
 epanetResult_no_control = epanetResult(1:1440,:); 
@@ -16,8 +18,12 @@ LDEResult1 = LDEResult1(1:1440,:);
 QsL_Control = QsL_Control(1:1440,:); 
 QsN_Control = QsN_Control(1:1440,:);
 
+
+
 % plot junctions and pipes that are directed controlled pipes;
-plotDirectedControlled_net3
+%plotDirectedControlled_net3
+plotControlledArea_net3
+
 
 
 

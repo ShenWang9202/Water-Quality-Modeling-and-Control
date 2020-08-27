@@ -1,6 +1,6 @@
 faceColor = 'b';
 transparency = 0.2;
-fontSize = 30;
+fontSize = 40;
 
 ControlledJunctionID = {'J211','J213','J215','J219','J225','229','J231','J239',...
     'J239','J249','J243','J255','J251',...
