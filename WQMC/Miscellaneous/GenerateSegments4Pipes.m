@@ -10,10 +10,31 @@ switch Network
         NumberofSegment4Pipes = LinkLengthPipe/50; % ones(size(LinkLengthPipe))*3;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
     case 5  % obel network
-        NumberofSegment4Pipes = LinkLengthPipe/1; % ones(size(LinkLengthPipe))*3;
+        NumberofSegment4Pipes = LinkLengthPipe/5; % ones(size(LinkLengthPipe))*3;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
         NumberofSegment4Pipes(NumberofSegment4Pipes<10) = 10;
         NumberofSegment4Pipes(NumberofSegment4Pipes>200) = 200;
+        
+        % set number of segment accroding to our interesent (usally we need to improve the number of segment of pipes where booster is installed around)
+        
+        tempID = d.getLinkNameID;
+        tempID = tempID(PipeIndex);
+        InterestedID = {'32','33','186','187','189','188','1845',...
+            '402','190','455','37'};%LinkID';
+        InterestedID = unique(InterestedID);
+        IDcell = tempID;
+        [~,n] = size(InterestedID);
+        InterestedPipeIndices = [];
+        for i = 1:n
+            % find index according to ID.
+            InterestedPipeIndices = [InterestedPipeIndices findIndexByID(InterestedID{i},IDcell)];
+        end
+        
+        tempIndex = find(NumberofSegment4Pipes(InterestedPipeIndices) < 400);
+        NumberofSegment4Pipes(InterestedPipeIndices(tempIndex)) = 400;
+        NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
+        
+        
     case 7
         NumberofSegment4Pipes = LinkLengthPipe/50;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
