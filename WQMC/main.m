@@ -59,6 +59,13 @@ switch Network
         NetworkName = 'tutorial8node1inital.inp';
         %         NetworkName = 'tutorial8node1inital2.inp';
         filename = '8node_1day.mat';
+    case 5
+        % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall=
+        % -0.0; initial value: J2 = 0.5 mg/L, J6 = 1.2 mg/L, R1 = 0.8 mg/L;
+        % segment = 1000;
+        NetworkName = 'myOBCL-1.INP';
+        %         NetworkName = 'tutorial8node1inital2.inp';
+        filename = 'OBCL_1day.mat';
     case 7
         % Quality Timestep = 1 min, and  Global Bulk = -0.3, Global Wall= -0.0
         NetworkName = 'Net1-1min-new-demand-pattern.inp';
@@ -105,7 +112,13 @@ switch Network
         flowRate_B = [10,10]; % unit: GPM
         Price_B = [1,1];
         TargetedPipeID =  PipeID([2]); % TRY [], PipeID([2]) PipeID([2,4,6]) PipeID([3,5,7])
-    case {5,6,7}
+    case {5}
+        Location_B = {'J181'}; % NodeID here;
+        flowRate_B = [10]; % unit: GPM
+        Price_B = [1];
+        TargetedPipeID =  [];%PipeID([2]); % TRY [], PipeID([2]) PipeID([2,4,6]) PipeID([3,5,7])
+        TargetedJunctionID = {'J45','J39'};
+    case {6,7}
         Location_B = {'J11','J22','J31'}; % NodeID here;
         flowRate_B = [10,10,10]; % unit: GPM
         Price_B = [1,1,1];
@@ -173,8 +186,6 @@ if DEMAND_UNCERTAINTY
     d.setPattern(UniqueJunctionPatternIndex,JunctionPattern_Uncertainty);
 end
 
-
-
 %% Construct aux struct
 %'NumberofSegment',NumberofSegment,...
 aux = struct('NumberofSegment4Pipes',NumberofSegment4Pipes,...
@@ -194,6 +205,7 @@ aux = struct('NumberofSegment4Pipes',NumberofSegment4Pipes,...
     'NodeID',{NodeID},...
     'LinkID',{LinkID},...
     'TargetedPipeID',{TargetedPipeID},...
+    'TargetedJunctionID',{TargetedJunctionID},...
     'NodesConnectingLinksID',{NodesConnectingLinksID},...
     'COMPARE',COMPARE);
 %    'Price_B',Price_B,...,
@@ -247,9 +259,6 @@ if DEMAND_UNCERTAINTY
     FlowWithoutUncertainty = HydraulicInfoWithoutUncertainty.Flow;
     VelocityPipeWithoutUncertainty = HydraulicInfoWithoutUncertainty.Velocity;
 end
-
-
-
 
 % profile on
 tic

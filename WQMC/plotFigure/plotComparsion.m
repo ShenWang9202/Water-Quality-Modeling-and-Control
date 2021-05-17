@@ -4,6 +4,8 @@ switch Network
         InterestedID = NodeID';
     case 4
         InterestedID = NodeID';
+    case 5
+        InterestedID = NodeID';
     case 7
         InterestedID = NodeID';
     case 9
@@ -28,6 +30,8 @@ switch Network
     case 1
         InterestedID = LinkID';
     case 4
+        InterestedID = LinkID';
+    case 5
         InterestedID = LinkID';
     case 7
         InterestedID = LinkID';
@@ -105,7 +109,7 @@ Calculate_Error_EPANET_LDE(epanetResult',LDEResult1');
 
 linkCount = d.getLinkCount;
 if(linkCount > 2)
-    eachGroup = 2;
+    eachGroup = 5;
     numberOfGroups = ceil(linkCount/eachGroup);
     for i = 1:numberOfGroups
         range = ((i-1)*eachGroup+1):(i*eachGroup);

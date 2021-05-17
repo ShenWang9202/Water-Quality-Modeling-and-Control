@@ -39,7 +39,7 @@ TankMassMatrix = aux.TankMassMatrix;
 MassEnergyMatrix = aux.MassEnergyMatrix;
 NumberofSegment4Pipes = aux.NumberofSegment4Pipes;
 LinkID = aux.LinkID;
-
+NodeID = aux.NodeID;
 PipeIndex = IndexInVar.PipeIndex;
 PumpIndex = IndexInVar.PumpIndex;
 ValveIndex = IndexInVar.ValveIndex;
@@ -70,8 +70,10 @@ JunctionDecayRate_step = JunctionDecayRate_sec * delta_t;
 
 % for Pumps
 % B_M = sparse(PumpCount,nodeCount);
+
 UpstreamNode_Amatrix = [A_J;A_R;A_TK];
 UpstreamNode_Bmatrix = [B_J;B_R;B_TK];
+
 EnergyMatrixPump= MassEnergyMatrix(PumpIndex,:);
 [A_M,B_M] = ConstructMatrixForPumpNew(EnergyMatrixPump,UpstreamNode_Amatrix,UpstreamNode_Bmatrix);
 
@@ -114,7 +116,8 @@ nx = IndexInVar.NumberofX; % Number of states
 
 Pipe_CStartIndex = IndexInVar.Pipe_CStartIndex;
 TargetedPipeID = aux.TargetedPipeID;
-C = generateC(TargetedPipeID,LinkID,NumberofSegment4Pipes,Pipe_CStartIndex,JunctionCount,nx);
+TargetedJuntionID = aux.TargetedJunctionID;
+C = generateC1(TargetedPipeID,LinkID,NumberofSegment4Pipes,Pipe_CStartIndex,TargetedJuntionID,NodeID,nx);
 %C = speye(nx,nx);
 % MAKE A B C as Sparse to save memory
 A = sparse(A);

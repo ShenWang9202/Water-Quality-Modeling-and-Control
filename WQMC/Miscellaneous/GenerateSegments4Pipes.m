@@ -9,6 +9,11 @@ switch Network
     case 4  % 8-node network
         NumberofSegment4Pipes = LinkLengthPipe/50; % ones(size(LinkLengthPipe))*3;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
+    case 5  % obel network
+        NumberofSegment4Pipes = LinkLengthPipe/1; % ones(size(LinkLengthPipe))*3;
+        NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);
+        NumberofSegment4Pipes(NumberofSegment4Pipes<10) = 10;
+        NumberofSegment4Pipes(NumberofSegment4Pipes>200) = 200;
     case 7
         NumberofSegment4Pipes = LinkLengthPipe/50;
         NumberofSegment4Pipes = ceil(NumberofSegment4Pipes);

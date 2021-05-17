@@ -1,3 +1,4 @@
 function index = findIndexByID(locationID,NodeID)
-    index = find(strcmp(NodeID,locationID));
+    index = find(strcmp(locationID,NodeID));
+    %strmatch(locationID,NodeID,'exact');
 end
