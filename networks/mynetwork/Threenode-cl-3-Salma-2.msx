@@ -1,0 +1,31 @@
+[TITLE]
+AB reaction kinetic model
+
+[OPTIONS]
+RATE_UNITS  MIN
+SOLVER      EUL
+TIMESTEP    1
+RTOL        1.E-3
+ATOL        1.E-3
+
+[SPECIES]
+; Type  Name     Units   RTol   ATol
+BULK    A         MG      1.E-3  1.E-3
+BULK    B         MG      1.E-3  1.E-3
+
+[COEFFICIENTS]
+CONSTANT Kb         6.94444E-4   ;1/24/60=Free bulk decay rate == 1/day
+CONSTANT K2         0.1;0.0481944 100000/24/60/60= MUTUAL REACTION;
+
+[PIPE]
+RATE A    -Kb*A - K2*A*B
+RATE B    -K2*A*B
+
+[TANKS]
+RATE A 	-Kb*A - K2*A*B
+RATE B    -K2*A*B
+
+
+[SOURCES]
+CONCEN    RESERVOIR-129	A		1	
+CONCEN    RESERVOIR-129	B		0.1	    

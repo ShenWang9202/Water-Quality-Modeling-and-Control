@@ -107,6 +107,7 @@ switch Network
         % the C_B is what we need find in MPC, useless here
         %C_B = [1]; % unit: mg/L % Concentration of booster
         TargetedPipeID = [];%PipeID([2,4,6,8]);
+        TargetedJunctionID = {};
     case {2,3,4}
         Location_B = {'J3','J7'}; % NodeID here;
         flowRate_B = [10,10]; % unit: GPM
