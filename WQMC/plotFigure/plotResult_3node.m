@@ -1,7 +1,7 @@
 clear
 % Plot MPC
 load('Three-node_1day.mat')
-plotDemandPipeFlowRateSeperately_3nodes
+% plotDemandPipeFlowRateSeperately_3nodes
 plotControlActionU_3node(ControlActionU,BoosterLocationIndex,Location_B)
 
 

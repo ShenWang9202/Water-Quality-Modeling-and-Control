@@ -51,7 +51,14 @@ R =  R_coeff * speye(n_deltau,n_deltau);
 
 % reference
 n_ref = ny*Np;
-reference = Constants4Concentration.reference;
+
+%reference = Constants4Concentration.reference;
+
+% set reference as random, so that, we can get changing input.
+minValue = 0.8;
+maxValue = 2;
+reference = (maxValue-minValue).*rand(1,1) + minValue;
+
 reference = reference*ones(n_ref,1);
 % only select the pipes now.
 n_Q = Np*ny;
