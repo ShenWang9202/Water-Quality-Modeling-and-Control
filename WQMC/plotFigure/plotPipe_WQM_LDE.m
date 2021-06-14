@@ -7,7 +7,7 @@ lineWidth = 3.5;
 % data is always 1, we don't display the concentration of J10
 %IngoreID = {'J10'};
 BlueLineWidth = 3.5;
-plotMinMaxRange4Pipe_WQM(X_Pipe_control_result,InterestedID,PipeID,faceColor,transparency,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName)
+plotMinMaxRange4Pipe_WQM(X_Pipe_control_result,InterestedID,PipeID,faceColor,transparency,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName,TitleName)
 
 % InterestedID = {'P31','P110'};
 % InterestedTime2 = 800;

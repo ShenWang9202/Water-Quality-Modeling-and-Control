@@ -31,7 +31,7 @@ ylabel({'Mass rate (mg/min)'},'FontSize',fontsize,'interpreter','latex')
 %% plot enlarged part
 h2 = subplot(1,2,2)
 InterestedTime1 = 1;
-InterestedTime2 = 20;
+InterestedTime2 = 40;
 ranges = InterestedTime1:InterestedTime2;
 
 plot(ranges,ControlActionU(ranges,BoosterLocationIndex),'LineWidth',3);
@@ -62,6 +62,6 @@ set(h2, 'Position',SecondPosition)
 h1
 h2
 
-set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 6])
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 12 6])
 print(figure1,'ControlActionU_3node_RandomInput','-depsc2','-r300');
 end

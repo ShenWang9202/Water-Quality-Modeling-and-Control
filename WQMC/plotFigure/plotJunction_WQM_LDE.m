@@ -8,7 +8,7 @@ lineWidth = 3.5;
 %IngoreID = {'J10'};
 
 BlueLineWidth = 3.5;
-plotMinMaxRange4Junction_WQM(X_Junction_control_result,InterestedID,JunctionID,faceColor,transparency,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName)
+plotMinMaxRange4Junction_WQM(X_Junction_control_result,InterestedID,JunctionID,faceColor,transparency,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName,TitleName)
 
 % lineWidth = 3.5;
 % InterestedID = {'J21','J31'};

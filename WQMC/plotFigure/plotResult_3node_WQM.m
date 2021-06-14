@@ -25,11 +25,13 @@ X_control_result = [X_control_result X_node_control_result(:,1)]; % J2
 X_control_result = [X_control_result X_node_control_result(:,3)]; % T3
 X_control_result = [X_control_result X_link_control_result(:,1)]; % P23
 fileName = 'EnlargedLinkNodeConcentrations_3node_WQM_LDE';
-plotLinkNodeConcentrations_3node_WQM(ID4Legend,X_control_result,fileName)
+TitleName = 'LDE';
+plotLinkNodeConcentrations_3node_WQM(ID4Legend,X_control_result,fileName,TitleName)
 % This is from EPANET model
 X_control_result = [];
 X_control_result = [X_control_result QsN_Control(:,1)]; % J2
 X_control_result = [X_control_result QsN_Control(:,3)]; % T3
 X_control_result = [X_control_result QsL_Control(:,1)]; % P23
 fileName = 'EnlargedLinkNodeConcentrations_3node_WQM_EPANET';
-plotLinkNodeConcentrations_3node_WQM(ID4Legend,X_control_result,fileName)
+TitleName = 'EPANET';
+plotLinkNodeConcentrations_3node_WQM(ID4Legend,X_control_result,fileName,TitleName)

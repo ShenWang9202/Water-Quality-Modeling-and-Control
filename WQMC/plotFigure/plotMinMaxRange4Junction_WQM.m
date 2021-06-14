@@ -1,4 +1,4 @@
-function plotMinMaxRange4Junction_WQM(y,InterestedID,IDLibrary,faceColor,tranparecy,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName)
+function plotMinMaxRange4Junction_WQM(y,InterestedID,IDLibrary,faceColor,tranparecy,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName,TitleName)
 % input y is the source data, each column is the junctions' data, and each
 % row is the time in minutes
 
@@ -68,7 +68,7 @@ xlim([0,1440])
 
 
 
-lgd = legend('Location','Best','Interpreter','Latex','NumColumns',2);
+lgd = legend('Location','Best','Interpreter','Latex','NumColumns',3);
 % lgd = legend('Location','eastoutside','Interpreter','Latex');
 lgd.FontSize = fontSize-6;
 
@@ -79,8 +79,9 @@ set(gca, 'TickLabelInterpreter', 'latex','fontsize',fontSize-2);
 %xlabel('Time (minute)','FontSize',fontSize,'interpreter','latex')
 ylabel('Concentration (mg/L)','FontSize',fontSize,'interpreter','latex')
 box on
-
+title(TitleName,'FontSize',fontSize,'interpreter','latex')
 hold on 
+
 % ta = annotation(figure1,'textarrow',[0.35356037151703 0.43888544891641],...
 %     [0.379690010298661 0.4138002059732],...
 %     'String',{'Magnified data', 'in the right'});
@@ -161,6 +162,6 @@ h1
 h2
 
 % set(gca, 'TickLabelInterpreter', 'latex','fontsize',fontSize-6);
-set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 7])
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 12 7])
 print(figure1,FileName,'-depsc2','-r300');
 end

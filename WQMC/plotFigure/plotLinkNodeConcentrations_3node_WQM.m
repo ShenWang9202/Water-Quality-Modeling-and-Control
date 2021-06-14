@@ -1,4 +1,4 @@
-function plotLinkNodeConcentrations_3node_WQM(ID4Legend,X_control_result,fileName)
+function plotLinkNodeConcentrations_3node_WQM(ID4Legend,X_control_result,fileName,TitleName)
 figure1 = figure
 h1 = subplot(1,2,1)
 fontsize = 38;
@@ -25,12 +25,12 @@ set(lgd,'Interpreter','Latex');
 
 % xlabel('Time (minute)','FontSize',fontsize,'interpreter','latex')
 ylabel({'Concentration (mg/L)'},'FontSize',fontsize-3,'interpreter','latex')
-
+title(TitleName,'FontSize',fontsize,'interpreter','latex')
 
 %% plot enlarged part
 h2 = subplot(1,2,2)
 InterestedTime1 = 1;
-InterestedTime2 = 20;
+InterestedTime2 = 40;
 ranges = InterestedTime1:InterestedTime2;
 
 plot(ranges,X_control_result(ranges,:),'LineWidth',3);
@@ -64,6 +64,6 @@ set(h2, 'Position',SecondPosition)
 h1
 h2
 
-set(gcf,'PaperUnits','inches','PaperPosition',[0 0 16 6])
+set(gcf,'PaperUnits','inches','PaperPosition',[0 0 12 6])
 print(figure1,fileName,'-depsc2','-r300');
 end
