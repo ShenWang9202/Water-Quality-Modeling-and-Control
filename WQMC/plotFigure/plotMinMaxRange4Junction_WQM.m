@@ -1,4 +1,4 @@
-function plotMinMaxRange4Junction_WQM(y,InterestedID,IDLibrary,faceColor,tranparecy,fontSize,BlueLineWidth,lineWidth,InterestedTime2,FileName)
+function plotMinMaxRange4Junction_WQM(y,InterestedID,IDLibrary,faceColor,tranparecy,fontSize,BlueLineWidth,lineWidth,InterestedTime1,InterestedTime2,FileName)
 % input y is the source data, each column is the junctions' data, and each
 % row is the time in minutes
 
@@ -101,7 +101,7 @@ hold on
 % print(figure1,['Junction_Net1',InterestedID{1}],'-depsc2','-r300');
 
 %% Plot enlarged version
-InterestedTime1 = 70;
+InterestedTime1
 InterestedTime2
 x = InterestedTime1:InterestedTime2;
 

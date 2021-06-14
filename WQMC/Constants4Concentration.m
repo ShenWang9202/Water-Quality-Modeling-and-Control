@@ -1,12 +1,12 @@
 classdef Constants4Concentration
     properties( Constant = true )
-        Network = 7;% use 1 4 7 9 
+        Network = 9;% use 1 4 7 9 
         % Only do water quality simulation using LDE model and compare it
         % with EPANET (set ONLY_COMPARE variable as 1, otherwise, set it as 0)
-        ONLY_COMPARE = 0;
+        ONLY_COMPARE = 1;
 
-        SimutionTimeInMinute = 24*60; 
-        %SimutionTimeInMinute = 4*24*60; % Simulate Net1 for 4 day
+%         SimutionTimeInMinute = 24*60; 
+        SimutionTimeInMinute = 24*60; % Simulate Net1 for 4 day
         SimutionTimeInMinute4RBC = 24*60;  
         % Interval (in minutes) of injecting chlorin from boosters (must be a factor or divisor of Hq_min)
         T_booster_min = 1;
